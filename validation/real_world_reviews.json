@@ -1,69 +1,67 @@
 {
-  "schema_version": 1,
-  "policy": "Targeted manual spot checks only; entries are not exhaustive repository-wide error rates.",
+  "schema_version": 2,
+  "policy": "Targeted manual spot checks only; entries are not exhaustive repository-wide error rates. Resolved regressions are retained for auditability and are also represented in the committed hand-labelled benchmark.",
   "reviews": [
     {
       "repo": "django/django",
-      "scope": "Reviewed environment-variable indirection in django/conf/__init__.py at the pinned commit.",
+      "scope": "Rechecked the pinned django/conf/__init__.py environment-variable indirection after static string propagation hardening.",
       "false_positives": [],
-      "false_negatives": [
-        {
-          "key": "DJANGO_SETTINGS_MODULE",
-          "source": "django/conf/__init__.py",
-          "reason": "The environment-variable name is stored in ENVIRONMENT_VARIABLE and passed to os.environ.get indirectly; the current Python discovery path requires a literal key at the call site."
-        }
-      ]
+      "false_negatives": []
     },
     {
       "repo": "hashicorp/terraform",
-      "scope": "Reviewed Go environment-variable reads whose names are held in constants at the pinned commit.",
+      "scope": "Rechecked pinned Go environment-variable reads whose names are held in constants after deterministic constant propagation hardening.",
       "false_positives": [],
-      "false_negatives": [
-        {
-          "key": "TF_TEMP_LOG_PATH",
-          "source": "main.go",
-          "reason": "Terraform defines envTmpLogPath = \"TF_TEMP_LOG_PATH\" and calls os.Getenv(envTmpLogPath); the current Go adapter recognizes literal os.Getenv/os.LookupEnv keys only."
-        },
-        {
-          "key": "TF_IN_AUTOMATION",
-          "source": "commands.go",
-          "reason": "Terraform defines runningInAutomationEnvName = \"TF_IN_AUTOMATION\" and calls os.Getenv(runningInAutomationEnvName); constant propagation across the Go file is not implemented."
-        }
-      ]
+      "false_negatives": []
     },
     {
       "repo": "expressjs/express",
-      "scope": "Reviewed package.json metadata alongside real NODE_ENV reads at the pinned commit.",
-      "false_positives": [
-        {
-          "key": "name",
-          "source": "package.json",
-          "reason": "The package name is project metadata, not an application runtime configuration input, but generic JSON flattening currently records it as a settings declaration."
-        },
-        {
-          "key": "version",
-          "source": "package.json",
-          "reason": "The package version is release metadata rather than runtime configuration; generic JSON flattening currently records it as a settings declaration."
-        }
-      ],
+      "scope": "Rechecked package.json project metadata after runtime-configuration metadata filtering.",
+      "false_positives": [],
       "false_negatives": []
     },
     {
       "repo": "axios/axios",
-      "scope": "Reviewed package.json metadata in a large JavaScript repository at the pinned commit.",
-      "false_positives": [
-        {
-          "key": "name",
-          "source": "package.json",
-          "reason": "The package identity is metadata, not runtime configuration; generic JSON flattening treats it as a configuration declaration."
-        },
-        {
-          "key": "version",
-          "source": "package.json",
-          "reason": "The package version is metadata, not runtime configuration; generic JSON flattening treats it as a configuration declaration."
-        }
-      ],
+      "scope": "Rechecked package.json project metadata after runtime-configuration metadata filtering.",
+      "false_positives": [],
       "false_negatives": []
+    }
+  ],
+  "resolved_regressions": [
+    {
+      "repo": "django/django",
+      "kind": "false_negative",
+      "key": "DJANGO_SETTINGS_MODULE",
+      "source": "django/conf/__init__.py",
+      "resolution": "Static Python string propagation now resolves the environment-variable name passed indirectly to os.environ.get."
+    },
+    {
+      "repo": "hashicorp/terraform",
+      "kind": "false_negative",
+      "key": "TF_TEMP_LOG_PATH",
+      "source": "main.go",
+      "resolution": "The Go hardening pass resolves statically assigned constant/string names passed to os.Getenv/os.LookupEnv."
+    },
+    {
+      "repo": "hashicorp/terraform",
+      "kind": "false_negative",
+      "key": "TF_IN_AUTOMATION",
+      "source": "commands.go",
+      "resolution": "The Go hardening pass resolves statically assigned constant/string names passed to os.Getenv/os.LookupEnv."
+    },
+    {
+      "repo": "expressjs/express",
+      "kind": "false_positive",
+      "key": "name/version",
+      "source": "package.json",
+      "resolution": "Standard package identity metadata is excluded from runtime configuration declarations."
+    },
+    {
+      "repo": "axios/axios",
+      "kind": "false_positive",
+      "key": "name/version",
+      "source": "package.json",
+      "resolution": "Standard package identity metadata is excluded from runtime configuration declarations."
     }
   ]
 }
