@@ -71,7 +71,7 @@ def test_current_scan_matches_registered_report_schema(tmp_path: Path) -> None:
     )
     report = scan(tmp_path, use_cache=False)
     data = report.to_dict()
-    assert data["summary"]["semantic_engine"] == "v0.8"
+    assert data["summary"]["semantic_engine"] == "v0.9"
     validation = validate_document("report", data)
     assert validation.compatible is True
     assert validation.status == "current"
