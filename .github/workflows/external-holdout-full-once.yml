@@ -1,0 +1,45 @@
+name: External holdout full one-off
+
+on:
+  push:
+    branches:
+      - validation/full-holdout-results-20260929
+
+permissions:
+  contents: read
+
+jobs:
+  full-holdout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ConfigReach
+        run: python -m pip install -e .
+      - name: Run full frozen external holdout
+        run: |
+          python validation/run_external_holdout.py \
+            --manifest validation/external_holdout_projects.json \
+            --baseline-manifest validation/real_world_projects.json \
+            --reviews validation/external_holdout_reviews.json \
+            --profile full \
+            --json validation/results/external-holdout-full.json \
+            --markdown validation/results/external-holdout-full.md
+      - name: Add holdout summary
+        if: always()
+        run: |
+          if [[ -f validation/results/external-holdout-full.md ]]; then
+            cat validation/results/external-holdout-full.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload holdout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: configreach-external-holdout-full
+          path: |
+            validation/results/external-holdout-full.json
+            validation/results/external-holdout-full.md
+          if-no-files-found: warn
