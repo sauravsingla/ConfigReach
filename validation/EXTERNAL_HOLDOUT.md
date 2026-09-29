@@ -29,13 +29,13 @@ The v1 corpus spans the built-in language/configuration adapters with public ups
 | `apache/airflow` | Python + configuration-heavy application | full |
 | `PrefectHQ/prefect` | Python settings/workflow configuration | full |
 | `vercel/next.js` | JavaScript/TypeScript environment behavior | full |
-| `vitejs/vite` | JavaScript/TypeScript + dotenv semantics | smoke, full |
+| `vitejs/vite` | JavaScript/TypeScript + dotenv semantics | full |
 | `argoproj/argo-cd` | Go + Kubernetes/YAML deployment configuration | full |
 | `spring-projects/spring-boot` | Java/Spring configuration properties | full |
 | `dotnet/aspnetcore` | .NET `IConfiguration` and environment patterns | full |
 | `astral-sh/uv` | Rust environment-driven CLI behavior | full |
 | `rails/rails` | Ruby `ENV` access patterns | full |
-| `laravel/framework` | PHP `env(...)` and config patterns | smoke, full |
+| `laravel/framework` | PHP `env(...)` and config patterns | full |
 | `terraform-aws-modules/terraform-aws-vpc` | Terraform variables/defaults/validation | smoke, full |
 
 Exact commit SHAs are the source of truth in `external_holdout_projects.json`.
@@ -44,15 +44,15 @@ The projects are validation targets only. Their inclusion does not imply endorse
 
 ## Profiles
 
-The `smoke` profile is small enough for ordinary pull-request and push CI. It intentionally crosses multiple adapters and configuration formats. Heavy targets such as Prefect remain in the frozen `full` corpus but are excluded from routine smoke runs so execution cost cannot make every pull request slow.
+The `smoke` profile is intentionally a single focused, pinned Terraform module. Its purpose is to prove the complete pull-request path — upstream fetch, immutable-SHA verification, ConfigReach scan, JSON/Markdown generation and artifact upload — without making every code change wait on large external repositories.
 
-The `full` profile contains every frozen holdout project. It runs on the monthly schedule and can also be launched manually from the `External holdout validation` workflow. Keeping the full suite off every pull request avoids turning large upstream clones and static scans into routine CI latency.
+The `full` profile contains every frozen holdout project across all represented ecosystems. It runs on the monthly schedule and can also be launched manually from the `External holdout validation` workflow. Large projects such as Airflow, Prefect, Next.js and ASP.NET Core therefore remain mandatory holdout targets without becoming routine PR latency.
 
 Changing smoke membership for execution cost does not remove a repository from the frozen corpus; the `full` profile remains the source of truth for holdout membership.
 
 ## Reproduce locally
 
-Manifest integrity only, without fetching upstream repositories:
+Manifest integrity only, without fetching any upstream repository:
 
 ```bash
 python validation/run_external_holdout.py \
