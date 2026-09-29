@@ -32,11 +32,10 @@ def test_committed_holdout_is_frozen_disjoint_and_profiled() -> None:
     assert summary["projects"] == 11
     assert summary["baseline_overlap"] == []
     assert summary["profiles"]["full"] == 11
-    assert summary["profiles"]["smoke"] == 4
+    assert summary["profiles"]["smoke"] == 3
 
     smoke = select_projects(manifest, "smoke")
     assert [item["repo"] for item in smoke] == [
-        "PrefectHQ/prefect",
         "vitejs/vite",
         "laravel/framework",
         "terraform-aws-modules/terraform-aws-vpc",

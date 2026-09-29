@@ -320,12 +320,24 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="configreach-external-holdout-") as tmp:
         work = Path(tmp)
         for project in selected:
+            print(
+                f"[holdout] scanning {project['repo']}@{project['commit'][:12]} "
+                f"({project['ecosystem']})",
+                flush=True,
+            )
             try:
                 result = _project_result(project, work, reviews.get(project["repo"]))
                 result["source_url"] = project["source_url"]
                 result["rationale"] = project["rationale"]
                 result["profiles"] = list(project["profiles"])
                 projects.append(result)
+                print(
+                    f"[holdout] completed {project['repo']}: "
+                    f"configs={result['configuration_inputs']} "
+                    f"covered={result['covered_inputs']} "
+                    f"runtime={result['runtime_seconds']:.3f}s",
+                    flush=True,
+                )
             except Exception as exc:
                 failures.append(
                     {
@@ -334,6 +346,7 @@ def main() -> int:
                         "error": str(exc),
                     }
                 )
+                print(f"[holdout] FAILED {project['repo']}: {exc}", file=sys.stderr, flush=True)
             finally:
                 target = work / project["repo"].replace("/", "__")
                 shutil.rmtree(target, ignore_errors=True)
@@ -384,8 +397,6 @@ def main() -> int:
     print(json.dumps(output["summary"], sort_keys=True))
 
     if failures:
-        for failure in failures:
-            print(f"FAILED {failure['repo']}: {failure['error']}", file=sys.stderr)
         return 1
     return 0
 

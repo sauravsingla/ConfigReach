@@ -27,7 +27,7 @@ The v1 corpus spans the built-in language/configuration adapters with public ups
 | Project | Primary validation angle | Profiles |
 |---|---|---|
 | `apache/airflow` | Python + configuration-heavy application | full |
-| `PrefectHQ/prefect` | Python settings/workflow configuration | smoke, full |
+| `PrefectHQ/prefect` | Python settings/workflow configuration | full |
 | `vercel/next.js` | JavaScript/TypeScript environment behavior | full |
 | `vitejs/vite` | JavaScript/TypeScript + dotenv semantics | smoke, full |
 | `argoproj/argo-cd` | Go + Kubernetes/YAML deployment configuration | full |
@@ -44,9 +44,11 @@ The projects are validation targets only. Their inclusion does not imply endorse
 
 ## Profiles
 
-The `smoke` profile is small enough for ordinary pull-request and push CI. It intentionally crosses multiple adapters and configuration formats.
+The `smoke` profile is small enough for ordinary pull-request and push CI. It intentionally crosses multiple adapters and configuration formats. Heavy targets such as Prefect remain in the frozen `full` corpus but are excluded from routine smoke runs so execution cost cannot make every pull request slow.
 
 The `full` profile contains every frozen holdout project. It runs on the monthly schedule and can also be launched manually from the `External holdout validation` workflow. Keeping the full suite off every pull request avoids turning large upstream clones and static scans into routine CI latency.
+
+Changing smoke membership for execution cost does not remove a repository from the frozen corpus; the `full` profile remains the source of truth for holdout membership.
 
 ## Reproduce locally
 

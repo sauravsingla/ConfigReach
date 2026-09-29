@@ -25,7 +25,7 @@
       "repo": "PrefectHQ/prefect",
       "commit": "4f52bc6d0dd8186ca63bdd0552c5e21f05b483b2",
       "ecosystem": "Python",
-      "profiles": ["smoke", "full"],
+      "profiles": ["full"],
       "source_url": "https://github.com/PrefectHQ/prefect",
       "rationale": "Modern Python settings-heavy application and workflow platform."
     },
