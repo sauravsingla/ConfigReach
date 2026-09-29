@@ -1,0 +1,40 @@
+name: GitHub Action smoke test
+
+on:
+  pull_request:
+    paths:
+      - action.yml
+      - src/**
+      - pyproject.toml
+      - examples/**
+      - .github/workflows/action-smoke.yml
+  push:
+    branches: [main]
+    paths:
+      - action.yml
+      - src/**
+      - pyproject.toml
+      - examples/**
+      - .github/workflows/action-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run ConfigReach as a local GitHub Action
+        uses: ./
+        with:
+          path: examples/basic
+          format: json
+          output: ${{ runner.temp }}/configreach-action.json
+          fail-under: "0"
+          fail-on: ""
+      - name: Verify action output
+        run: python -m json.tool "${{ runner.temp }}/configreach-action.json" >/dev/null
