@@ -1,25 +1,28 @@
-name: Publish ConfigReach to PyPI
+name: Release ConfigReach
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
   push:
     branches: [main]
     paths:
       - pyproject.toml
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: configreach-release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  publish:
+  build:
+    name: verify and build
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/configreach
-
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -29,39 +32,33 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install release toolchain
         run: python -m pip install -e '.[dev]'
 
-      - name: Verify release tag matches package version
-        if: github.event_name == 'release'
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+      - name: Verify package, runtime and release versions
+        id: version
         run: |
-          python - <<'PY'
+          python - <<'PY' >> "$GITHUB_OUTPUT"
           import os
-          import configreach
-          expected = f"v{configreach.__version__}"
-          actual = os.environ["RELEASE_TAG"]
-          if actual != expected:
-              raise SystemExit(f"Release tag {actual!r} does not match package version {expected!r}")
-          print(f"Publishing ConfigReach {configreach.__version__}")
-          PY
-
-      - name: Verify package and runtime versions match
-        run: |
-          python - <<'PY'
           import pathlib
           import tomllib
           import configreach
+
           metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
           package_version = metadata["project"]["version"]
           if package_version != configreach.__version__:
               raise SystemExit(
                   f"pyproject version {package_version!r} does not match runtime version {configreach.__version__!r}"
               )
-          print(f"Publishing ConfigReach {package_version}")
+          tag = f"v{package_version}"
+          ref_type = os.environ.get("GITHUB_REF_TYPE")
+          ref_name = os.environ.get("GITHUB_REF_NAME")
+          if ref_type == "tag" and ref_name != tag:
+              raise SystemExit(f"Release tag {ref_name!r} does not match package version {tag!r}")
+          print(f"version={package_version}")
+          print(f"tag={tag}")
           PY
 
       - name: Run test suite
@@ -70,8 +67,189 @@ jobs:
       - name: Build reproducible release artifacts
         run: python tools/release_repro.py --output release-repro.json --artifacts-dir dist
 
-      - name: Publish package to PyPI
+      - name: Upload verified release bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: configreach-release-${{ steps.version.outputs.version }}
+          path: |
+            dist/
+            release-repro.json
+          if-no-files-found: error
+          retention-days: 30
+
+  pypi:
+    name: publish PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/configreach
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download verified release bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: configreach-release-${{ needs.build.outputs.version }}
+          path: release-bundle
+
+      - name: Check whether version already exists on PyPI
+        id: pypi-state
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          if curl --fail --silent --show-error "https://pypi.org/pypi/configreach/${VERSION}/json" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "ConfigReach ${VERSION} is already on PyPI; publication is idempotently skipped."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish package to PyPI with Trusted Publishing
+        if: steps.pypi-state.outputs.exists != 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist/
+          packages-dir: release-bundle/dist/
           print-hash: true
+
+  ghcr:
+    name: publish GHCR
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: sauravsingla/configreach
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate OCI metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ needs.build.outputs.version }}
+            type=raw,value=latest
+            type=sha,prefix=sha-
+          labels: |
+            org.opencontainers.image.title=ConfigReach
+            org.opencontainers.image.description=Deterministic configuration coverage for software repositories
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.build.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
+
+      - name: Build and publish multi-architecture image
+        id: image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: mode=max
+          sbom: true
+
+      - name: Verify published image
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          IMAGE="${REGISTRY}/${IMAGE_NAME}:${VERSION}"
+          docker buildx imagetools inspect "$IMAGE"
+          docker pull "$IMAGE"
+          docker run --rm "$IMAGE" --help >/tmp/configreach-container-help.txt
+          test -s /tmp/configreach-container-help.txt
+          echo "Digest: ${{ steps.image.outputs.digest }}"
+
+  github-release:
+    name: publish GitHub Release
+    needs: [build, pypi, ghcr]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download verified release bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: configreach-release-${{ needs.build.outputs.version }}
+          path: release-bundle
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.build.outputs.tag }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          mapfile -t assets < <(find release-bundle -type f \( -name '*.whl' -o -name '*.tar.gz' -o -name 'release-repro.json' \) -print | sort)
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${assets[@]}" --clobber
+          else
+            if git rev-parse "$TAG" >/dev/null 2>&1; then
+              gh release create "$TAG" "${assets[@]}" --verify-tag --title "ConfigReach ${TAG}" --generate-notes --latest
+            else
+              gh release create "$TAG" "${assets[@]}" --target "$GITHUB_SHA" --title "ConfigReach ${TAG}" --generate-notes --latest
+            fi
+          fi
+
+          major="v${VERSION%%.*}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f "$major" "$GITHUB_SHA"
+          git push origin "refs/tags/${major}" --force
+
+  sync-sites:
+    name: sync Pages and Hugging Face
+    needs: github-release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch documentation publishers from main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run publish-huggingface.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+
+      - name: Release summary
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          {
+            echo "## ConfigReach ${VERSION} release"
+            echo
+            echo "- PyPI: https://pypi.org/project/configreach/${VERSION}/"
+            echo "- GHCR: ghcr.io/sauravsingla/configreach:${VERSION}"
+            echo "- GitHub Release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${VERSION}"
+            echo "- GitHub Action: uses: ${GITHUB_REPOSITORY}@v${VERSION%%.*}"
+          } >> "$GITHUB_STEP_SUMMARY"
