@@ -8,6 +8,7 @@ from pathlib import Path
 from .baseline import apply_baseline, baseline_path
 from .config import Settings, load_settings
 from .discover import scan as core_scan
+from .hardening import apply_hardening
 from .models import ConfigKey, Location, ScanReport
 from .schemas import REPORT_SCHEMA_VERSION
 from .semantic_adapters import (
@@ -56,7 +57,7 @@ class SemanticScanReport(ScanReport):
     def to_dict(self):
         data = super().to_dict()
         data["schema_version"] = REPORT_SCHEMA_VERSION
-        data["summary"]["semantic_engine"] = "v0.8"
+        data["summary"]["semantic_engine"] = "v0.9"
         return data
 
 
@@ -160,6 +161,8 @@ def scan(root: str | Path = ".", settings: Settings | None = None, *, use_cache:
         elif suffix == ".tf":
             record_terraform_domains(text, rel, report.keys)
             record_terraform_validators(text, rel, report.keys)
+
+    apply_hardening(root_path, settings, report)
 
     # Re-apply boolean inference after semantic/validator adapters add finite domains/flags.
     for item in report.keys.values():
