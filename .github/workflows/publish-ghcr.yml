@@ -1,16 +1,6 @@
-name: Publish ConfigReach container
+name: Publish ConfigReach container (manual)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - Dockerfile
-      - .dockerignore
-      - src/**
-      - pyproject.toml
-      - .github/workflows/publish-ghcr.yml
-  release:
-    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -24,8 +14,8 @@ env:
   IMAGE_NAME: sauravsingla/configreach
 
 concurrency:
-  group: configreach-ghcr-${{ github.ref }}
-  cancel-in-progress: true
+  group: configreach-ghcr-manual
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -85,28 +75,15 @@ jobs:
           provenance: mode=max
           sbom: true
 
-      - name: Verify published image
+      - name: Verify published image anonymously
         shell: bash
         run: |
           IMAGE="${REGISTRY}/${IMAGE_NAME}:${{ steps.version.outputs.version }}"
           docker buildx imagetools inspect "$IMAGE"
+          docker logout ghcr.io
+          docker image rm "$IMAGE" >/dev/null 2>&1 || true
           docker pull "$IMAGE"
           docker run --rm "$IMAGE" --help > /tmp/configreach-container-help.txt
           test -s /tmp/configreach-container-help.txt
-          echo "Published $IMAGE"
+          echo "Published and anonymously verified $IMAGE"
           echo "Digest: ${{ steps.build.outputs.digest }}"
-
-      - name: Publish job summary
-        shell: bash
-        run: |
-          {
-            echo "## ConfigReach GitHub Container Registry"
-            echo
-            echo "Published: \`${REGISTRY}/${IMAGE_NAME}:${{ steps.version.outputs.version }}\`"
-            echo
-            echo "Also tagged: \`latest\` and \`sha-${GITHUB_SHA::7}\`"
-            echo
-            echo "Platforms: \`linux/amd64\`, \`linux/arm64\`"
-            echo
-            echo "Digest: \`${{ steps.build.outputs.digest }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
