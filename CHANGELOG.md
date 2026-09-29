@@ -4,16 +4,21 @@ All notable ConfigReach changes are documented here. The project follows semanti
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-09-29
+
 ### Added
 - OpenSSF Scorecard, Dependabot, dependency review, container vulnerability scanning and GitHub Action smoke tests.
 - GitHub Container Registry distribution with multi-architecture images, SBOM and provenance.
-- Unified release automation for PyPI, GHCR, GitHub Releases, documentation and Hugging Face synchronization.
+- Unified release automation for PyPI, GHCR, GitHub Releases, the floating `v0` GitHub Action tag, documentation and Hugging Face synchronization.
+- Marketplace-ready GitHub Action metadata and usage documentation.
 
 ### Changed
 - Hardened deterministic analysis for statically resolvable Python/Go environment-variable indirection and JavaScript `process.env` destructuring.
 - Tightened feature-flag `variation()` detection to reduce unrelated-method false positives.
 - Excluded standard `package.json` and `pyproject.toml` project metadata from runtime configuration declarations while preserving custom configuration sections.
 - Branch-state inference now requires actual branch evidence rather than treating every boolean declaration as a branch.
+- Added Spring `@Value` declaration evidence to improve declaration recall.
+- Hand-labelled benchmark now scores 37/37 committed labels correctly with 100% micro precision, recall and F1. This remains a small transparent benchmark, not a universal accuracy estimate.
 
 ## [0.9.1] - 2026-09-29
 
@@ -48,6 +53,7 @@ All notable ConfigReach changes are documented here. The project follows semanti
 - Cross-platform reproducibility verification.
 - Optional tree-sitter JavaScript adapter example.
 
-[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.1
 [0.9.0]: https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.0
