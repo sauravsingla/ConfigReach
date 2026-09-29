@@ -1,0 +1,43 @@
+name: Container security
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 5 * * 3"
+  push:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - .github/workflows/container-scan.yml
+      - .github/workflows/publish-ghcr.yml
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify GHCR package is anonymously pullable
+        run: |
+          docker logout ghcr.io >/dev/null 2>&1 || true
+          docker pull ghcr.io/sauravsingla/configreach:latest
+
+      - name: Scan published image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ghcr.io/sauravsingla/configreach:latest
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "0"
+
+      - name: Upload container SARIF
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: configreach-container
