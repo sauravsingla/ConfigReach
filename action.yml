@@ -1,5 +1,6 @@
 name: ConfigReach
-description: Deterministic configuration coverage for your repository
+author: Saurav Singla
+description: Deterministic environment-variable, feature-flag and configuration test coverage
 inputs:
   path:
     description: Repository path to scan
