@@ -89,7 +89,7 @@ jobs:
       id-token: write
     steps:
       - name: Download verified release bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: configreach-release-${{ needs.build.outputs.version }}
           path: release-bundle
@@ -198,7 +198,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download verified release bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: configreach-release-${{ needs.build.outputs.version }}
           path: release-bundle
