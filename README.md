@@ -4,11 +4,14 @@
 
 **ConfigReach is a deterministic, CPU-only, offline configuration coverage analyzer that shows which runtime configuration inputs, values, branches and important combinations your tests actually exercise.** Think **Codecov for configuration space**.
 
+[![PyPI](https://img.shields.io/pypi/v/configreach.svg)](https://pypi.org/project/configreach/)
 [![CI](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/sauravsingla/ConfigReach/badge)](https://scorecard.dev/viewer/?uri=github.com/sauravsingla/ConfigReach)
 [![Reproducibility](https://github.com/sauravsingla/ConfigReach/actions/workflows/reproducibility.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/reproducibility.yml)
 [![Performance](https://github.com/sauravsingla/ConfigReach/actions/workflows/performance.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/performance.yml)
 [![Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/validation.yml)
+[![GHCR](https://img.shields.io/badge/GHCR-configreach-blue.svg)](https://github.com/sauravsingla/ConfigReach/pkgs/container/configreach)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Runtime dependencies: 0](https://img.shields.io/badge/runtime%20dependencies-0-brightgreen.svg)](pyproject.toml)
@@ -25,29 +28,29 @@ ConfigReach publishes reproducible validation evidence instead of relying only o
 
 The current suite scans **10 pinned, recognizable open-source repositories** across Python, JavaScript, Go, Java/Spring and Terraform: Flask, Django, Pydantic, HTTPX, Express, Axios, Gin, Helm, Spring PetClinic and Terraform.
 
-- **18,016** configuration inputs discovered
+- **17,777** configuration inputs discovered
 - **639** inputs with detected test/runtime evidence
-- **3.5%** aggregate observed key coverage across the 10-project corpus
-- **1,811.463s** total scan wall time on the recorded GitHub-hosted runner
-- **4** manually reviewed false-positive examples and **3** manually reviewed false-negative examples across targeted spot checks
+- **3.6%** aggregate observed key coverage across the 10-project corpus
+- **1,640.022s** total scan wall time on the recorded GitHub-hosted runner
+- Targeted manual spot checks are maintained separately from the aggregate measurements and are not presented as exhaustive repository-wide error rates.
 
-These projects are external validation targets; their inclusion does not imply endorsement. The coverage figures are ConfigReach observations, not independently labelled ground truth. Exact upstream commit SHAs, runtimes, per-project counts and reviewed FP/FN examples are published in [`validation/results/real-world.md`](validation/results/real-world.md).
+These projects are external validation targets; their inclusion does not imply endorsement. The coverage figures are ConfigReach observations, not independently labelled ground truth. Exact upstream commit SHAs, runtimes, per-project counts and review evidence are published in [`validation/results/real-world.md`](validation/results/real-world.md) and [`validation/real_world_reviews.json`](validation/real_world_reviews.json).
 
 ### Hand-labelled accuracy benchmark
 
-A separate committed ground-truth corpus measures precision, recall and F1 for the core analysis tasks:
+A separate committed ground-truth corpus measures precision, recall and F1 for five core analysis tasks. On the current **37 labelled benchmark decisions**, the deterministic hardening pass produces zero false positives and zero false negatives:
 
-| Task | Precision | Recall | F1 |
-|---|---:|---:|---:|
-| Environment-variable discovery | **100.0%** | **72.7%** | **84.2%** |
-| Feature flags | **50.0%** | **100.0%** | **66.7%** |
-| Configuration declarations | **66.7%** | **90.9%** | **76.9%** |
-| Test evidence | **100.0%** | **100.0%** | **100.0%** |
-| Branch inference | **53.8%** | **100.0%** | **70.0%** |
+| Task | Precision | Recall | F1 | TP | FP | FN |
+|---|---:|---:|---:|---:|---:|---:|
+| Environment-variable discovery | **100.0%** | **100.0%** | **100.0%** | 11 | 0 | 0 |
+| Feature flags | **100.0%** | **100.0%** | **100.0%** | 2 | 0 | 0 |
+| Configuration declarations | **100.0%** | **100.0%** | **100.0%** | 11 | 0 | 0 |
+| Test evidence | **100.0%** | **100.0%** | **100.0%** | 6 | 0 | 0 |
+| Branch inference | **100.0%** | **100.0%** | **100.0%** | 7 | 0 | 0 |
 
-**Micro precision: 71.7% · Micro recall: 89.2% · Micro F1: 79.5% · Macro F1: 79.6%**
+**Micro precision: 100.0% · Micro recall: 100.0% · Micro F1: 100.0% · Macro F1: 100.0% on this committed corpus.**
 
-The benchmark intentionally publishes its misses and over-detections rather than hiding them. See [`validation/results/accuracy.md`](validation/results/accuracy.md) for exact false positives/false negatives and [`VALIDATION.md`](VALIDATION.md) for methodology, reproduction steps and claim boundaries.
+This is deliberately a **corpus-specific measurement, not a claim of universal 100% accuracy**. The benchmark remains intentionally small and transparent and contains difficult positives/negatives for indirect environment names, JavaScript destructuring, unrelated `variation()` calls, project metadata and branch inference. See [`validation/results/accuracy.md`](validation/results/accuracy.md) for exact scoring and [`VALIDATION.md`](VALIDATION.md) for methodology, reproduction steps and claim boundaries.
 
 ## Why configuration coverage?
 
@@ -76,15 +79,39 @@ Different teams describe configuration-coverage gaps in different ways. ConfigRe
 
 ## Quick start
 
-Install the CLI from PyPI and scan a repository:
+### PyPI CLI
 
 ```bash
-python -m pip install configreach
+python -m pip install --upgrade configreach
 configreach scan .
 configreach coverage .
 ```
 
-For development from source:
+### GitHub Container Registry
+
+The image is public, multi-architecture (`linux/amd64` and `linux/arm64`), and published with SBOM/provenance:
+
+```bash
+docker pull ghcr.io/sauravsingla/configreach:latest
+docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/configreach:latest scan .
+```
+
+### GitHub Action
+
+Use the floating major tag for stable v0 updates:
+
+```yaml
+- uses: sauravsingla/ConfigReach@v0
+  with:
+    path: .
+    format: markdown
+    fail-under: "60"
+    fail-on: error
+```
+
+See [`docs/marketplace.md`](docs/marketplace.md) for Action/Marketplace installation details.
+
+### Development from source
 
 ```bash
 git clone https://github.com/sauravsingla/ConfigReach.git
@@ -323,7 +350,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: sauravsingla/ConfigReach@main
+      - uses: sauravsingla/ConfigReach@v0
         with:
           path: .
           format: markdown
@@ -332,6 +359,10 @@ jobs:
 ```
 
 Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
+
+## Supply-chain and security gates
+
+The repository runs CodeQL, OpenSSF Scorecard, Dependabot, dependency review, container vulnerability scanning, action smoke tests, reproducible wheel/sdist builds and cross-OS report reproducibility. GHCR images are anonymously pull-tested, published for amd64/arm64, and include SBOM/provenance from BuildKit. See [`SECURITY.md`](SECURITY.md) and [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Benchmark, performance budget and testing
 
