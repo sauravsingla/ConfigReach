@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from configreach._compat import safe_extract_tar
+from configreach.config import load_settings
 from configreach.discover import scan
 
 
@@ -65,3 +66,20 @@ def test_scan_does_not_follow_file_symlinks_outside_repository(tmp_path: Path) -
     report = scan(repository, use_cache=False)
     assert "SAFE_MODE" in report.keys
     assert "OUTSIDE_SECRET" not in report.keys
+
+
+def test_repository_config_cannot_escape_for_baseline_or_trace(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}\n", encoding="utf-8")
+    (repository / "configreach.toml").write_text(
+        "[configreach]\n"
+        "baseline = '../outside.json'\n"
+        f"trace_file = {str(outside)!r}\n",
+        encoding="utf-8",
+    )
+
+    settings = load_settings(repository)
+    assert settings.baseline == ".configreach/baseline.json"
+    assert settings.trace_file == ".configreach/trace.jsonl"
