@@ -53,12 +53,10 @@ def build(output_dir: Path) -> None:
     holdout_tool = holdout.get("tool", {})
     accuracy_tool = accuracy.get("tool", {})
     validation_version = holdout_tool.get("version")
+    accuracy_version = accuracy_tool.get("version")
 
     require(bool(validation_version), "external holdout tool version is missing")
-    require(
-        accuracy_tool.get("version") == validation_version,
-        "accuracy tool version does not match external holdout tool version",
-    )
+    require(bool(accuracy_version), "accuracy corpus tool version is missing")
 
     projects = holdout["projects"]
     summary = holdout["summary"]
@@ -88,12 +86,10 @@ def build(output_dir: Path) -> None:
         "summary runtime_seconds is stale",
     )
 
-    source_revision = (
-        execution.get("source_revision")
-        or holdout_tool.get("source_revision")
-        or accuracy_tool.get("source_revision")
-    )
-    require(bool(source_revision), "validation source revision is missing")
+    source_revision = execution.get("source_revision") or holdout_tool.get("source_revision")
+    accuracy_source_revision = accuracy_tool.get("source_revision")
+    require(bool(source_revision), "external holdout source revision is missing")
+    require(bool(accuracy_source_revision), "accuracy corpus source revision is missing")
 
     aggregate = accuracy["aggregate"]
     require(int(aggregate["true_positives"]) > 0, "accuracy corpus has no true positives")
@@ -156,6 +152,10 @@ def build(output_dir: Path) -> None:
             "configreach_version": validation_version,
             "current_source_version": source_version,
             "source_revision": source_revision,
+            "external_holdout_configreach_version": validation_version,
+            "external_holdout_source_revision": source_revision,
+            "accuracy_configreach_version": accuracy_version,
+            "accuracy_source_revision": accuracy_source_revision,
             "projects": len(projects),
             "ecosystems": len({item["ecosystem"] for item in projects}),
             "configuration_inputs": total_inputs,
@@ -201,7 +201,8 @@ def build(output_dir: Path) -> None:
         "Built Hugging Face dataset: "
         f"{len(rows)} rows, {len({item['ecosystem'] for item in projects})} ecosystems, "
         f"{total_inputs:,} inputs, {covered_inputs:,} covered, {coverage_pct:.2f}% coverage; "
-        f"validation version {validation_version}, current source version {source_version}"
+        f"holdout version {validation_version}, accuracy version {accuracy_version}, "
+        f"current source version {source_version}"
     )
 
 
