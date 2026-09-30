@@ -14,7 +14,6 @@ on:
 
 permissions:
   contents: write
-  id-token: write
 
 jobs:
   benchmark:
@@ -29,20 +28,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install ConfigReach and benchmark dependencies
-        run: python -m pip install -e ".[dev]" pyarrow "huggingface_hub>=1.19" hf_xet
-      - name: Mint short-lived Hugging Face token with OIDC
-        env:
-          HF_OIDC_RESOURCE: spaces/sauravsingla08/ConfigReach
-        shell: bash
-        run: |
-          set -euo pipefail
-          token="$(hf auth token)"
-          test -n "$token"
-          echo "::add-mask::$token"
-          echo "HF_TOKEN=$token" >> "$GITHUB_ENV"
+        run: python -m pip install -e ".[dev]" pyarrow
+      - name: Verify Git LFS availability
+        run: git lfs version
       - name: Download and freeze public ConfRCA snapshot
-        env:
-          HF_HUB_DISABLE_TELEMETRY: "1"
         run: python validation/confrca/refresh_public_snapshot.py
       - name: Run ConfRCA external benchmark
         run: python validation/confrca/run_confrca_benchmark.py
