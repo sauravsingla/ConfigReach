@@ -9,7 +9,7 @@ The benchmark intentionally separates two questions:
 
 ## Vendored data
 
-`data/config_version.csv` is the complete configuration registry required for the discovery benchmark. `data/confrca_labels.csv` is a column-reduced copy of the labelled pair table containing only the fields required for evaluation; the very large prompt and trace payloads are not duplicated in this repository. `data/SOURCE.json` records the upstream revision, URLs, hashes, retrieval time, row counts and licence.
+`data/config_version.csv` is the complete configuration registry required for the discovery benchmark. `data/confrca_labels.csv` is a column-reduced copy of the labelled pair table containing only the fields required for evaluation; the very large prompt and trace payloads are not duplicated in this repository. `data/SOURCE.json` records the immutable upstream revision, hashes, retrieval time, row counts, transport and licence.
 
 The generated files preserve ConfRCA's CC-BY-4.0 licensing and attribution. The authoritative upstream dataset remains:
 
@@ -18,14 +18,26 @@ The generated files preserve ConfRCA's CC-BY-4.0 licensing and attribution. The 
 
 ## Reproduce
 
+The data refresh uses the public Hugging Face Git repository plus Git LFS rather than depending on the live Dataset Viewer/REST endpoints.
+
 ```bash
-python -m pip install -e . pyarrow
-python validation/confrca/run_confrca_benchmark.py --refresh-dataset
+python -m pip install -e ".[dev]" pyarrow
+git lfs version
+python validation/confrca/refresh_public_snapshot.py
+python validation/confrca/run_confrca_benchmark.py
+pytest -q tests/test_confrca_benchmark.py
 ```
 
 Generated evidence is written to:
 
+- `validation/confrca/data/config_version.csv`
+- `validation/confrca/data/confrca_labels.csv`
+- `validation/confrca/data/SOURCE.json`
 - `validation/results/confrca.json`
 - `validation/results/confrca.md`
 
 The benchmark downloads the exact source-code versions named by ConfRCA, statically scans them, and does **not** execute target application code or install target project dependencies.
+
+## Claim boundary
+
+The registry supports **recall** against externally published positive configuration keys. ConfigReach-only detections are reported separately and are not called false positives without independent adjudication. The dependency-pair precision/recall/F1 numbers evaluate only the existing shared-scope co-occurrence signal against ConfRCA's human labels; they are not general scanner precision/recall or a claim that ConfigReach is a causal-dependency classifier.
