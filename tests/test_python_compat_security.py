@@ -25,7 +25,7 @@ def _archive_with(member: tarfile.TarInfo, data: bytes = b"payload") -> tarfile.
 
 
 def test_supported_python_range() -> None:
-    assert (3, 8) <= sys.version_info[:2] <= (3, 14)
+    assert (3, 10) <= sys.version_info[:2] <= (3, 14)
 
 
 def test_safe_extract_tar_extracts_regular_file(tmp_path: Path) -> None:
