@@ -49,7 +49,7 @@ def _safe_tar_target(destination: Path, member_name: str) -> Path:
 def safe_extract_tar(archive: tarfile.TarFile, destination: Path) -> None:
     """Extract only regular files and directories without path traversal.
 
-    This deliberately avoids ``TarFile.extractall`` so Python 3.8-3.11 receive
+    This deliberately avoids ``TarFile.extractall`` so Python 3.10-3.11 receive
     the same traversal/link protections as newer runtimes instead of falling
     back to the historical unrestricted extraction behavior.
     """
