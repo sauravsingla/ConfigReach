@@ -70,6 +70,7 @@ For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@
 - Supports environment variables, feature flags, configuration declarations, CLI options and multiple ecosystems
 - Markdown, JSON, SARIF and HTML output
 - Reproducible public validation evidence
+- Archived software record on Zenodo
 
 ## Release copy
 
@@ -94,6 +95,7 @@ Project hub:
 - Hugging Face Space: https://huggingface.co/spaces/sauravsingla08/ConfigReach
 - Validation Dataset: https://huggingface.co/datasets/sauravsingla08/configreach-validation
 - PyPI: https://pypi.org/project/configreach/
+- Zenodo: https://zenodo.org/records/23038726
 
 ## Marketplace readiness
 
