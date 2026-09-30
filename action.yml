@@ -1,6 +1,6 @@
-name: ConfigReach
+name: ConfigReach Configuration Coverage
 author: Saurav Singla
-description: Deterministic environment-variable, feature-flag and configuration test coverage
+description: Find untested env vars, feature flags and configuration states in CI
 inputs:
   path:
     description: Repository path to scan
