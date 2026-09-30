@@ -11,14 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Review dependency changes
-        id: review
-        continue-on-error: true
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           fail-on-severity: high
-
-      - name: Explain unavailable dependency graph
-        if: steps.review.outcome == 'failure'
-        run: |
-          echo "::warning::GitHub Dependency Review is unavailable until the repository Dependency graph is enabled. Dependabot, CodeQL, OpenSSF Scorecard and container scanning remain active."
-          echo "Dependency Review will begin enforcing high-severity dependency changes automatically once GitHub's Dependency graph is enabled."
+          deny-licenses: AGPL-1.0-only, AGPL-1.0-or-later, SSPL-1.0
