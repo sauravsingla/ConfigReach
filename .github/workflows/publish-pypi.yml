@@ -15,20 +15,74 @@ permissions:
   contents: read
 
 jobs:
+  prepare:
+    name: verify release trigger
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.gate.outputs.release }}
+      version: ${{ steps.gate.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Require an actual version change
+        id: gate
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import os
+          import pathlib
+          import subprocess
+          import tomllib
+
+          current = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+          release = os.environ["EVENT_NAME"] == "workflow_dispatch"
+          before = os.environ.get("BEFORE_SHA", "")
+
+          if not release and before and before != "0" * 40:
+              previous_text = subprocess.check_output(
+                  ["git", "show", f"{before}:pyproject.toml"], text=True
+              )
+              previous = tomllib.loads(previous_text)["project"]["version"]
+              release = current != previous
+              print(f"Previous version: {previous}", file=__import__("sys").stderr)
+
+          print(f"Current version: {current}", file=__import__("sys").stderr)
+          print(f"release={'true' if release else 'false'}")
+          print(f"version={current}")
+          PY
+
+      - name: Explain metadata-only update
+        if: steps.gate.outputs.release != 'true'
+        run: echo "pyproject.toml changed without a package version change; release publication is intentionally skipped."
+
   build:
     name: verify and build
+    needs: prepare
+    if: needs.prepare.outputs.release == 'true'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
 
@@ -43,7 +97,7 @@ jobs:
           import tomllib
           import configreach
 
-          metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
+          metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))
           package_version = metadata["project"]["version"]
           if package_version != configreach.__version__:
               raise SystemExit(
@@ -60,7 +114,7 @@ jobs:
         run: python tools/release_repro.py --output release-repro.json --artifacts-dir dist
 
       - name: Upload verified release bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: configreach-release-${{ steps.version.outputs.version }}
           path: |
@@ -81,7 +135,7 @@ jobs:
       id-token: write
     steps:
       - name: Download verified release bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: configreach-release-${{ needs.build.outputs.version }}
           path: release-bundle
@@ -100,7 +154,7 @@ jobs:
 
       - name: Publish package to PyPI with Trusted Publishing
         if: steps.pypi-state.outputs.exists != 'true'
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
         with:
           packages-dir: release-bundle/dist/
           print-hash: true
@@ -119,16 +173,18 @@ jobs:
       IMAGE_NAME: sauravsingla/configreach
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -136,7 +192,7 @@ jobs:
 
       - name: Generate OCI metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -153,7 +209,7 @@ jobs:
 
       - name: Build and publish multi-architecture image
         id: image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           file: ./Dockerfile
@@ -189,12 +245,12 @@ jobs:
       contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
       - name: Download verified release bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: configreach-release-${{ needs.build.outputs.version }}
           path: release-bundle
