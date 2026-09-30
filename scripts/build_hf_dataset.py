@@ -16,7 +16,7 @@ from typing import Any
 
 try:
     import tomllib
-except ModuleNotFoundError:  # Python 3.8-3.10
+except ModuleNotFoundError:  # Python 3.10
     import tomli as tomllib
 
 
