@@ -71,6 +71,8 @@ pip install --upgrade configreach
 
 The current frozen external holdout scans **11 pinned public open-source repositories across 9 ecosystems**. The repositories were selected before ConfigReach results were examined and are disjoint from the earlier 10-project baseline.
 
+**Validation provenance:** this frozen holdout and the accompanying hand-labelled accuracy corpus were produced with **ConfigReach v0.9.2**. ConfigReach v0.9.3 is the current source release; historical validation evidence is intentionally not relabelled when the software version advances.
+
 - **11 / 11** repository jobs completed successfully
 - **96,845** configuration inputs discovered
 - **5,539** inputs with detected test/runtime evidence
