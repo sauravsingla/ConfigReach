@@ -1,0 +1,35 @@
+name: Align v0.9.3 release tag
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/retag-v0-9-3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  align:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Align immutable release tag with published v0.9.3 artifacts
+        run: |
+          set -euo pipefail
+          target=4a9ebcbe3f5182fe3596fbed88fb539fea1bf7e4
+          git fetch origin "$target"
+          git tag -f v0.9.3 "$target"
+          git push origin refs/tags/v0.9.3 --force
+
+      - name: Remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/retag-v0-9-3.yml
+          git commit -m "chore: remove one-time v0.9.3 retag workflow"
+          git push origin HEAD:main
