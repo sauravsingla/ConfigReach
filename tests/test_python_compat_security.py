@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from configreach._compat import safe_extract_tar
+from configreach._compat import safe_extract_tar, validate_git_revision_range
 from configreach.config import load_settings
 from configreach.discover import scan
 
@@ -83,3 +83,14 @@ def test_repository_config_cannot_escape_for_baseline_or_trace(tmp_path: Path) -
     settings = load_settings(repository)
     assert settings.baseline == ".configreach/baseline.json"
     assert settings.trace_file == ".configreach/trace.jsonl"
+
+
+@pytest.mark.parametrize("value", ["", "--ext-diff", "HEAD...--output=/tmp/out", "HEAD..-bad", "HEAD\x00main"])
+def test_git_revision_validation_rejects_option_injection(value: str) -> None:
+    with pytest.raises(ValueError):
+        validate_git_revision_range(value)
+
+
+def test_git_revision_validation_accepts_normal_ranges() -> None:
+    assert validate_git_revision_range("origin/main...HEAD") == "origin/main...HEAD"
+    assert validate_git_revision_range("HEAD~1..HEAD") == "HEAD~1..HEAD"
