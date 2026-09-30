@@ -48,7 +48,7 @@ def test_lexical_hardening_preserves_real_reads_and_interpolation(tmp_path):
         "App.kt": 'val s = "value=${System.getenv("CR_OK_KT")}"\n',
         "Program.cs": 'var s = $"value={Environment.GetEnvironmentVariable("CR_OK_CS")}";\n',
         "main.rs": 'fn main(){ let _ = std::env::var("CR_OK_RS"); }\n',
-        "app.rb": 's = "value=#{ENV[\\"CR_OK_RB\\"]}"\n',
+        "app.rb": 's = "value=#{ENV[\'CR_OK_RB\']}"\n',
         "app.php": '<?php $x = getenv("CR_OK_PHP");\n',
         "run.sh": 'echo "${CR_OK_SH}"\n',
         "action.yml": 'name: x\nruns:\n  using: composite\n  steps:\n    - shell: bash\n      run: echo "${{ vars.CR_OK_GHA }}"\n',
