@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import shutil
 import tempfile
 from datetime import datetime, timezone
@@ -36,32 +35,23 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _require_hf_token() -> str:
-    token = os.environ.get("HF_TOKEN", "").strip()
-    if not token:
-        raise RuntimeError(
-            "HF_TOKEN is required only while refreshing ConfRCA. CI obtains a short-lived "
-            "token through the repository's existing Hugging Face Trusted Publisher/OIDC "
-            "workflow; no reusable secret is stored."
-        )
-    return token
-
-
 def _download_file(
     filename: str,
     destination: Path,
     *,
     revision: str,
     cache_dir: Path,
-    token: str,
 ) -> str:
+    # ConfRCA is a public CC-BY-4.0 dataset. Force anonymous access so a
+    # repository-scoped Hugging Face OIDC token can never be forwarded to an
+    # unrelated upstream resource and rejected for a resource-scope mismatch.
     downloaded = Path(
         hf_hub_download(
             repo_id=DATASET_ID,
             filename=filename,
             repo_type="dataset",
             revision=revision,
-            token=token,
+            token=False,
             cache_dir=str(cache_dir),
             force_download=True,
         )
@@ -73,10 +63,11 @@ def _download_file(
 
 def refresh_public_snapshot(data_dir: Path) -> dict:
     data_dir.mkdir(parents=True, exist_ok=True)
-    token = _require_hf_token()
 
-    # Resolve the dataset once and pin both benchmark files to one immutable revision.
-    info = HfApi(token=token).dataset_info(DATASET_ID)
+    # Resolve the public dataset anonymously and pin both benchmark files to
+    # one immutable revision. token=False intentionally ignores HF_TOKEN even
+    # if a caller has one in its environment for a different Hugging Face repo.
+    info = HfApi(token=False).dataset_info(DATASET_ID)
     upstream_revision = str(info.sha or "").strip()
     if not upstream_revision:
         raise RuntimeError("Hugging Face did not return an immutable ConfRCA revision SHA")
@@ -92,14 +83,12 @@ def refresh_public_snapshot(data_dir: Path) -> dict:
             registry_parquet,
             revision=upstream_revision,
             cache_dir=cache_dir,
-            token=token,
         )
         labels_sha = _download_file(
             PUBLIC_FILES["confrca_bench"],
             labels_parquet,
             revision=upstream_revision,
             cache_dir=cache_dir,
-            token=token,
         )
 
         registry_rows = pq.read_table(
@@ -140,11 +129,14 @@ def refresh_public_snapshot(data_dir: Path) -> dict:
             ),
             "transport": {
                 "client": "huggingface_hub",
-                "authentication": "ephemeral GitHub OIDC / Hugging Face Trusted Publisher token",
+                "authentication": "anonymous public dataset read (token=False)",
                 "long_lived_secret_required": False,
                 "note": (
-                    "The reduced snapshot is committed after refresh so ordinary reproduction "
-                    "and verification do not require Hugging Face credentials or network access."
+                    "ConfRCA is fetched anonymously and pinned to an immutable revision. "
+                    "Any Hugging Face OIDC token used elsewhere for publishing ConfigReach is "
+                    "intentionally not forwarded to this unrelated public dataset. The reduced "
+                    "snapshot is committed after refresh so ordinary reproduction and verification "
+                    "do not require Hugging Face credentials or network access."
                 ),
             },
             "files": {
