@@ -5,12 +5,13 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from ._compat import safe_extract_tar
+from ._compat import safe_extract_tar, validate_git_revision_range
 from .config import load_settings
 from .engine import SemanticScanReport, scan
 
 
 def changed_paths(root: Path, rev_range: str) -> set[str]:
+    rev_range = validate_git_revision_range(rev_range)
     proc = subprocess.run(["git", "diff", "--name-only", rev_range], cwd=root, capture_output=True, text=True, check=False)
     if proc.returncode:
         raise RuntimeError(proc.stderr.strip() or "git diff failed")
@@ -18,6 +19,7 @@ def changed_paths(root: Path, rev_range: str) -> set[str]:
 
 
 def changed_line_ranges(root: Path, rev_range: str) -> dict[str, list[tuple[int, int]]]:
+    rev_range = validate_git_revision_range(rev_range)
     proc = subprocess.run(
         ["git", "diff", "--unified=0", "--no-color", rev_range, "--"],
         cwd=root, capture_output=True, text=True, check=False,
@@ -48,6 +50,7 @@ def changed_line_ranges(root: Path, rev_range: str) -> dict[str, list[tuple[int,
 
 
 def _resolve_base_revision(root: Path, rev_range: str) -> str:
+    rev_range = validate_git_revision_range(rev_range)
     if "..." in rev_range:
         left, right = rev_range.split("...", 1)
         proc = subprocess.run(["git", "merge-base", left, right], cwd=root, capture_output=True, text=True, check=False)
@@ -60,6 +63,7 @@ def _resolve_base_revision(root: Path, rev_range: str) -> str:
 
 
 def _scan_revision(root: Path, revision: str) -> SemanticScanReport:
+    revision = validate_git_revision_range(revision)
     with tempfile.TemporaryDirectory(prefix="configreach-base-") as temp_dir:
         temp = Path(temp_dir)
         archive = temp / "snapshot.tar"
@@ -79,6 +83,7 @@ def _scan_revision(root: Path, revision: str) -> SemanticScanReport:
 
 
 def diff_report(root: Path, rev_range: str, *, use_cache: bool = True) -> str:
+    rev_range = validate_git_revision_range(rev_range)
     head = scan(root, use_cache=use_cache)
     settings = load_settings(root)
     changed = changed_paths(root, rev_range)
