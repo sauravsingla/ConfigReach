@@ -58,7 +58,11 @@ jobs:
             "pip-licenses==5.5.5; python_version >= '3.9'"
 
       - name: Fail on known Python dependency vulnerabilities
-        run: python -m pip_audit --strict --progress-spinner off
+        run: |
+          # ConfigReach and its example plugins are editable local source trees,
+          # not PyPI distributions. Their external dependencies remain in the
+          # environment and are audited; project source is covered by CodeQL.
+          python -m pip_audit --strict --skip-editable --progress-spinner off
 
       - name: Fail on denied dependency licenses
         shell: bash
