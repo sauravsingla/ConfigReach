@@ -30,10 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
 
@@ -56,7 +56,10 @@ jobs:
           execution = holdout['execution']
           ecosystems = holdout['ecosystem_summary']
           source_version = project['project']['version']
-          validation_version = holdout['tool']['version']
+          validation_version = holdout.get('tool', {}).get('version')
+          accuracy_version = accuracy.get('tool', {}).get('version')
+          validation_revision = holdout.get('tool', {}).get('source_revision') or execution.get('source_revision')
+          accuracy_revision = accuracy.get('tool', {}).get('source_revision')
 
           total_inputs = sum(item['configuration_inputs'] for item in projects)
           covered_inputs = sum(item['covered_inputs'] for item in projects)
@@ -72,10 +75,10 @@ jobs:
               raise SystemExit('external holdout overlaps the historical baseline')
           if not execution['all_jobs_succeeded']:
               raise SystemExit('external holdout contains a failed repository job')
-          if not validation_version:
-              raise SystemExit('external holdout tool version is missing')
-          if accuracy['tool']['version'] != validation_version:
-              raise SystemExit('accuracy tool version does not match external holdout tool version')
+          if not validation_version or not validation_revision:
+              raise SystemExit('external holdout provenance is incomplete')
+          if not accuracy_version or not accuracy_revision:
+              raise SystemExit('accuracy corpus provenance is incomplete')
 
           aggregate = accuracy['aggregate']
           if aggregate['true_positives'] <= 0:
@@ -103,16 +106,23 @@ jobs:
 
           space_readme = (root / 'huggingface-space/README.md').read_text(encoding='utf-8')
           validation_marker = f'ConfigReach v{validation_version}'
+          accuracy_marker = f'ConfigReach v{accuracy_version}'
           if validation_marker not in space_readme:
               raise SystemExit(
-                  'huggingface-space/README.md must identify the frozen validation scanner version: '
+                  'huggingface-space/README.md must identify the frozen holdout scanner version: '
                   + validation_marker
+              )
+          if accuracy_marker not in space_readme:
+              raise SystemExit(
+                  'huggingface-space/README.md must identify the hand-labelled accuracy scanner version: '
+                  + accuracy_marker
               )
 
           print('Hugging Face public metrics are synchronized with committed evidence:')
           print(json.dumps({
               **expected,
               'validation_version': f'v{validation_version}',
+              'accuracy_version': f'v{accuracy_version}',
           }, sort_keys=True))
           PY
 
