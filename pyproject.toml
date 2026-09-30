@@ -42,8 +42,10 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/sauravsingla/ConfigReach"
+Documentation = "https://sauravsingla.github.io/ConfigReach/"
 Repository = "https://github.com/sauravsingla/ConfigReach"
 Issues = "https://github.com/sauravsingla/ConfigReach/issues"
+Changelog = "https://github.com/sauravsingla/ConfigReach/blob/main/CHANGELOG.md"
 Archive = "https://zenodo.org/records/23038726"
 "Hugging Face Collection" = "https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage"
 
