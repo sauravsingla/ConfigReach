@@ -32,6 +32,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Verify Space metrics match committed evidence
         shell: bash
         run: |
@@ -41,34 +46,57 @@ jobs:
           import tomllib
 
           root = pathlib.Path('.')
-          holdout = json.loads((root / 'validation/results/external-holdout-full.json').read_text())
-          accuracy = json.loads((root / 'validation/results/accuracy.json').read_text())
-          project = tomllib.loads((root / 'pyproject.toml').read_text())
+          holdout = json.loads((root / 'validation/results/external-holdout-full.json').read_text(encoding='utf-8'))
+          accuracy = json.loads((root / 'validation/results/accuracy.json').read_text(encoding='utf-8'))
+          project = tomllib.loads((root / 'pyproject.toml').read_text(encoding='utf-8'))
 
           projects = holdout['projects']
+          summary = holdout['summary']
+          selection = holdout['selection']
+          execution = holdout['execution']
+          ecosystems = holdout['ecosystem_summary']
+          version = project['project']['version']
+
           total_inputs = sum(item['configuration_inputs'] for item in projects)
           covered_inputs = sum(item['covered_inputs'] for item in projects)
           coverage_pct = covered_inputs / total_inputs * 100 if total_inputs else 100.0
-          version = project['project']['version']
+
+          if summary['configuration_inputs'] != total_inputs:
+              raise SystemExit('holdout summary configuration_inputs does not match project rows')
+          if summary['covered_inputs'] != covered_inputs:
+              raise SystemExit('holdout summary covered_inputs does not match project rows')
+          if summary['projects_scanned'] != len(projects) or summary['projects_requested'] != len(projects):
+              raise SystemExit('holdout project counts are inconsistent')
+          if selection['baseline_overlap_count'] != 0:
+              raise SystemExit('external holdout overlaps the historical baseline')
+          if not execution['all_jobs_succeeded']:
+              raise SystemExit('external holdout contains a failed repository job')
+          if holdout['tool']['version'] != version:
+              raise SystemExit('external holdout tool version does not match pyproject version')
+          if accuracy['tool']['version'] != version:
+              raise SystemExit('accuracy tool version does not match pyproject version')
+
+          aggregate = accuracy['aggregate']
+          if aggregate['true_positives'] <= 0:
+              raise SystemExit('accuracy corpus has no true-positive labels')
 
           expected = {
               'version': f'v{version}',
               'inputs': f'{total_inputs:,}',
               'covered': f'{covered_inputs:,}',
               'coverage': f'{coverage_pct:.2f}%',
+              'project_jobs': f"{len(projects)} / {len(projects)}",
+              'ecosystems': f'{len(ecosystems)} ecosystems',
+              'runtime': f"{summary['runtime_seconds']:,.1f}s",
+              'precision': f"{aggregate['micro_precision'] * 100:.1f}%",
+              'recall': f"{aggregate['micro_recall'] * 100:.1f}%",
+              'f1': f"{aggregate['micro_f1'] * 100:.1f}%",
+              'tp': str(aggregate['true_positives']),
           }
-
-          aggregate = accuracy['aggregate']
-          if aggregate['micro_precision'] != 1.0 or aggregate['micro_recall'] != 1.0 or aggregate['micro_f1'] != 1.0:
-              raise SystemExit('accuracy JSON no longer matches the currently published 100% small-benchmark claim')
-          if aggregate['true_positives'] != 37 or aggregate['false_positives'] != 0 or aggregate['false_negatives'] != 0:
-              raise SystemExit('accuracy counts changed; update the public Space copy before publishing')
 
           for rel in ('huggingface-space/README.md', 'docs/index.html'):
               text = (root / rel).read_text(encoding='utf-8')
               missing = [f'{name}={value}' for name, value in expected.items() if value not in text]
-              if '100.0%' not in text or '37' not in text:
-                  missing.append('small-benchmark accuracy summary')
               if missing:
                   raise SystemExit(f'{rel} is stale: missing ' + ', '.join(missing))
 
