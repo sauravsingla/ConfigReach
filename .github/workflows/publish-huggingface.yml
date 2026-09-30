@@ -6,6 +6,14 @@ on:
     paths:
       - docs/**
       - huggingface-space/**
+      - README.md
+      - VALIDATION.md
+      - pyproject.toml
+      - validation/external_holdout_projects.json
+      - validation/results/external-holdout-full.json
+      - validation/results/external-holdout-full.md
+      - validation/results/accuracy.json
+      - validation/results/accuracy.md
       - .github/workflows/publish-huggingface.yml
   workflow_dispatch:
 
@@ -23,6 +31,50 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Verify Space metrics match committed evidence
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import pathlib
+          import tomllib
+
+          root = pathlib.Path('.')
+          holdout = json.loads((root / 'validation/results/external-holdout-full.json').read_text())
+          accuracy = json.loads((root / 'validation/results/accuracy.json').read_text())
+          project = tomllib.loads((root / 'pyproject.toml').read_text())
+
+          projects = holdout['projects']
+          total_inputs = sum(item['configuration_inputs'] for item in projects)
+          covered_inputs = sum(item['covered_inputs'] for item in projects)
+          coverage_pct = covered_inputs / total_inputs * 100 if total_inputs else 100.0
+          version = project['project']['version']
+
+          expected = {
+              'version': f'v{version}',
+              'inputs': f'{total_inputs:,}',
+              'covered': f'{covered_inputs:,}',
+              'coverage': f'{coverage_pct:.2f}%',
+          }
+
+          aggregate = accuracy['aggregate']
+          if aggregate['micro_precision'] != 1.0 or aggregate['micro_recall'] != 1.0 or aggregate['micro_f1'] != 1.0:
+              raise SystemExit('accuracy JSON no longer matches the currently published 100% small-benchmark claim')
+          if aggregate['true_positives'] != 37 or aggregate['false_positives'] != 0 or aggregate['false_negatives'] != 0:
+              raise SystemExit('accuracy counts changed; update the public Space copy before publishing')
+
+          for rel in ('huggingface-space/README.md', 'docs/index.html'):
+              text = (root / rel).read_text(encoding='utf-8')
+              missing = [f'{name}={value}' for name, value in expected.items() if value not in text]
+              if '100.0%' not in text or '37' not in text:
+                  missing.append('small-benchmark accuracy summary')
+              if missing:
+                  raise SystemExit(f'{rel} is stale: missing ' + ', '.join(missing))
+
+          print('Hugging Face public metrics are synchronized with committed evidence:')
+          print(json.dumps(expected, sort_keys=True))
+          PY
 
       - name: Install Hugging Face CLI
         run: |
