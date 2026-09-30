@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 
 from . import __version__
+from ._compat import safe_extract_tar
 from .baseline import baseline_path, write_baseline
 from .config import load_settings
 from .discover import scan
@@ -130,10 +131,7 @@ def _scan_revision(root: Path, revision: str) -> ScanReport:
             message = proc.stderr.decode("utf-8", errors="replace").strip()
             raise RuntimeError(message or f"git archive failed for {revision}")
         with tarfile.open(archive, "r") as bundle:
-            if sys.version_info >= (3, 12):
-                bundle.extractall(snapshot, filter="data")
-            else:
-                bundle.extractall(snapshot)
+            safe_extract_tar(bundle, snapshot)
         return scan(snapshot, use_cache=False)
 
 

@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import re
 import subprocess
-import sys
-import tarfile
 import tempfile
 from pathlib import Path
 
+from ._compat import safe_extract_tar
 from .config import load_settings
 from .engine import SemanticScanReport, scan
 
@@ -73,11 +72,9 @@ def _scan_revision(root: Path, revision: str) -> SemanticScanReport:
         if proc.returncode:
             message = proc.stderr.decode("utf-8", errors="replace").strip()
             raise RuntimeError(message or f"git archive failed for {revision}")
+        import tarfile
         with tarfile.open(archive, "r") as bundle:
-            if sys.version_info >= (3, 12):
-                bundle.extractall(snapshot, filter="data")
-            else:
-                bundle.extractall(snapshot)
+            safe_extract_tar(bundle, snapshot)
         return scan(snapshot, use_cache=False)
 
 

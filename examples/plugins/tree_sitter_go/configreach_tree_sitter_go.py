@@ -9,6 +9,20 @@ from tree_sitter import Language, Parser
 from configreach.models import ConfigKey, Location
 
 
+def _make_parser(language: Language) -> Parser:
+    """Support both the legacy 3.8-compatible and current Parser APIs."""
+    try:
+        return Parser(language)
+    except TypeError:  # tree-sitter 0.21.x
+        parser = Parser()
+        setter = getattr(parser, "set_language", None)
+        if setter is not None:
+            setter(language)
+        else:  # pragma: no cover - defensive bridge for intermediate APIs
+            parser.language = language
+        return parser
+
+
 class TreeSitterGoAdapter:
     """Optional parser-backed Go example for Adapter API v1."""
 
@@ -25,7 +39,7 @@ class TreeSitterGoAdapter:
 
     def scan(self, *, path: Path, rel: str, text: str, is_test: bool, keys: dict[str, ConfigKey]) -> None:
         language = Language(tsgo.language())
-        parser = Parser(language)
+        parser = _make_parser(language)
         source = text.encode("utf-8")
         tree = parser.parse(source)
         stack = [tree.root_node]

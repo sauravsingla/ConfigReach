@@ -1,16 +1,23 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = [
+  "setuptools==75.3.2; python_version < '3.10'",
+  "setuptools==84.0.0; python_version >= '3.10'",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "configreach-tree-sitter-js-example"
 version = "0.1.0"
 description = "Example optional tree-sitter JavaScript adapter for ConfigReach"
-requires-python = ">=3.11"
+requires-python = ">=3.8"
 dependencies = [
-  "configreach>=0.7",
-  "tree-sitter>=0.25,<0.26",
-  "tree-sitter-javascript>=0.23,<0.24",
+  "configreach>=0.9",
+  "tree-sitter==0.21.3; python_version == '3.8'",
+  "tree-sitter-javascript==0.21.4; python_version == '3.8'",
+  "tree-sitter==0.25.2; python_version == '3.9'",
+  "tree-sitter-javascript==0.23.1; python_version == '3.9'",
+  "tree-sitter==0.26.0; python_version >= '3.10'",
+  "tree-sitter-javascript==0.25.0; python_version >= '3.10'",
 ]
 
 [project.entry-points."configreach.adapters"]
