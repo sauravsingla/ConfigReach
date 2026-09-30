@@ -44,6 +44,8 @@ dependencies = []
 Homepage = "https://github.com/sauravsingla/ConfigReach"
 Repository = "https://github.com/sauravsingla/ConfigReach"
 Issues = "https://github.com/sauravsingla/ConfigReach/issues"
+Archive = "https://zenodo.org/records/23038726"
+"Hugging Face Collection" = "https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage"
 
 [project.optional-dependencies]
 dev = [
