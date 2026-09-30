@@ -1,0 +1,75 @@
+name: Publish ConfigReach validation dataset to Hugging Face
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - validation/results/external-holdout-full.json
+      - validation/results/accuracy.json
+      - huggingface-dataset/**
+      - scripts/build_hf_dataset.py
+      - pyproject.toml
+      - .github/workflows/publish-huggingface-dataset.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: huggingface-dataset
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build dataset from committed validation evidence
+        run: |
+          python scripts/build_hf_dataset.py --output .hf-dataset
+
+      - name: Verify generated dataset payload
+        run: |
+          python - <<'PY'
+          import json
+          import pathlib
+
+          root = pathlib.Path('.hf-dataset')
+          rows = [json.loads(line) for line in (root / 'data/external_holdout.jsonl').read_text(encoding='utf-8').splitlines() if line.strip()]
+          summary = json.loads((root / 'metadata/summary.json').read_text(encoding='utf-8'))
+
+          if not rows:
+              raise SystemExit('generated dataset has no rows')
+          if len(rows) != summary['projects']:
+              raise SystemExit('generated dataset row count does not match summary')
+          if sum(row['configuration_inputs'] for row in rows) != summary['configuration_inputs']:
+              raise SystemExit('generated dataset configuration input count does not match summary')
+          if sum(row['covered_inputs'] for row in rows) != summary['covered_inputs']:
+              raise SystemExit('generated dataset covered input count does not match summary')
+          if not (root / 'README.md').is_file():
+              raise SystemExit('generated dataset card is missing')
+
+          print(f"Verified {len(rows)} dataset rows")
+          PY
+
+      - name: Install Hugging Face CLI
+        run: |
+          curl -LsSf https://hf.co/cli/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Publish dataset with OIDC
+        env:
+          HF_OIDC_RESOURCE: datasets/sauravsingla08/configreach-validation
+        run: |
+          hf upload sauravsingla08/configreach-validation .hf-dataset . \
+            --repo-type dataset \
+            --delete="*" \
+            --commit-message="Sync ConfigReach validation dataset from GitHub ${GITHUB_SHA::7}"
