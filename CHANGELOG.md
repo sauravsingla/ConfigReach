@@ -4,6 +4,15 @@ All notable ConfigReach changes are documented here. The project follows semanti
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-09-30
+
+### Added
+- Published ConfigReach Configuration Coverage to GitHub Marketplace.
+- Added Zenodo archive/citation metadata and reusable distribution launch materials.
+
+### Changed
+- Synchronized package, runtime, citation, documentation and Hugging Face source-version metadata with the v0.9.3 release.
+
 ## [0.9.2] - 2026-09-29
 
 ### Added
@@ -53,7 +62,8 @@ All notable ConfigReach changes are documented here. The project follows semanti
 - Cross-platform reproducibility verification.
 - Optional tree-sitter JavaScript adapter example.
 
-[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.2...HEAD
+[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.3...HEAD
+[0.9.3]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.1
 [0.9.0]: https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.0

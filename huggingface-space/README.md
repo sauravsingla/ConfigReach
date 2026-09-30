@@ -61,7 +61,7 @@ The Hugging Face Space is the public project/demo page. Repository scanning runs
 
 ## Current source version
 
-**ConfigReach v0.9.2** is the current repository version.
+**ConfigReach v0.9.3** is the current repository version.
 
 ```bash
 pip install --upgrade configreach
