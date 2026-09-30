@@ -1,0 +1,33 @@
+{
+  "title": "ConfigReach: Deterministic Configuration Coverage for Software Repositories",
+  "upload_type": "software",
+  "description": "ConfigReach is a deterministic, CPU-only configuration coverage analyzer for software repositories. It discovers environment variables, feature flags, CLI options and configuration declarations, maps them to test/runtime evidence, and reports configuration coverage gaps without requiring an LLM, GPU, API key or hosted service.",
+  "creators": [
+    {
+      "name": "Singla, Saurav"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "configuration coverage",
+    "configuration testing",
+    "environment variables",
+    "feature flags",
+    "software testing",
+    "static analysis",
+    "continuous integration",
+    "GitHub Actions"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/sauravsingla/ConfigReach",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
