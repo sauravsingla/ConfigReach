@@ -21,9 +21,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s validation/confrca/data/config_version.csv
-          test -s validation/confrca/data/confrca_labels.csv
-          test -s validation/confrca/data/SOURCE.json
+          missing=0
+          for path in \
+            validation/confrca/data/config_version.csv \
+            validation/confrca/data/confrca_labels.csv \
+            validation/confrca/data/SOURCE.json; do
+            if [[ ! -s "$path" ]]; then
+              echo "::error file=$path::Frozen ConfRCA evidence is missing. Refresh it locally with an HF_TOKEN that can read iainzhang/confRCA, then commit the reduced snapshot before dispatching this verifier."
+              missing=1
+            fi
+          done
+          exit "$missing"
       - name: Re-run ConfRCA benchmark from frozen evidence
         run: python validation/confrca/run_confrca_benchmark.py
       - name: Run focused unit tests
