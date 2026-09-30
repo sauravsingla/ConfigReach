@@ -1,6 +1,6 @@
 # Release hardening
 
-ConfigReach v0.9 adds deterministic checks around the artifacts that would be published to a Python package index or attached to a GitHub release. These checks are development/release tooling only. Python 3.11+ uses the standard library at runtime; Python 3.8–3.10 adds only the pinned `tomli` TOML backport.
+ConfigReach v0.9 adds deterministic checks around the artifacts that would be published to a Python package index or attached to a GitHub release. These checks are development/release tooling only. Python 3.11+ uses the standard library at runtime; Python 3.10 adds only the pinned `tomli` TOML backport.
 
 ## Build twice and compare
 
@@ -46,7 +46,7 @@ configreach release dist-a --compare dist-b
 7. runs a ConfigReach smoke scan from that installed wheel,
 8. uploads the wheel, sdist and reproducibility evidence as workflow artifacts.
 
-The publication workflow additionally installs the package from public PyPI on Python 3.8 through 3.14, runs `pip check`, validates package metadata and exercises the CLI before creating the GitHub Release/tag. A `pyproject.toml` metadata-only change does not publish a release unless the project version actually changes.
+The publication workflow additionally installs the package from public PyPI on Python 3.10 through 3.14, runs `pip check`, validates package metadata and exercises the CLI before creating the GitHub Release/tag. A `pyproject.toml` metadata-only change does not publish a release unless the project version actually changes.
 
 ## Performance history
 
