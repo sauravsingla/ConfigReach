@@ -72,7 +72,7 @@ Additional reproducibility evidence is published under `metadata/`.
 ```python
 from datasets import load_dataset
 
- ds = load_dataset("sauravsingla08/configreach-validation")
+ds = load_dataset("sauravsingla08/configreach-validation")
 print(ds["validation"])
 ```
 
