@@ -1,0 +1,116 @@
+name: External holdout validation
+
+on:
+  pull_request:
+    paths:
+      - "src/configreach/**"
+      - "validation/run_real_world.py"
+      - "validation/run_external_holdout.py"
+      - "validation/external_holdout_projects.json"
+      - "validation/external_holdout_reviews.json"
+      - "validation/real_world_projects.json"
+      - "tests/test_external_holdout.py"
+      - ".github/workflows/external-holdout.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/configreach/**"
+      - "validation/run_real_world.py"
+      - "validation/run_external_holdout.py"
+      - "validation/external_holdout_projects.json"
+      - "validation/external_holdout_reviews.json"
+      - "validation/real_world_projects.json"
+      - ".github/workflows/external-holdout.yml"
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Frozen holdout profile to scan"
+        required: true
+        default: "full"
+        type: choice
+        options:
+          - smoke
+          - full
+  schedule:
+    - cron: "17 3 1 * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-holdout-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-manifest:
+    name: validate frozen holdout
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ConfigReach
+        run: python -m pip install -e ".[dev]"
+      - name: Unit tests for holdout integrity
+        run: pytest -q tests/test_external_holdout.py
+      - name: Validate full manifest without network
+        run: |
+          python validation/run_external_holdout.py \
+            --manifest validation/external_holdout_projects.json \
+            --baseline-manifest validation/real_world_projects.json \
+            --profile full \
+            --validate-only
+
+  scan:
+    name: scan external holdout
+    needs: validate-manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ConfigReach from source
+        run: python -m pip install -e .
+
+      - name: Select profile
+        id: profile
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            profile="${{ inputs.profile }}"
+          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+            profile="full"
+          else
+            profile="smoke"
+          fi
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "Scanning frozen profile: $profile"
+
+      - name: Scan pinned external holdout
+        run: |
+          python validation/run_external_holdout.py \
+            --manifest validation/external_holdout_projects.json \
+            --baseline-manifest validation/real_world_projects.json \
+            --reviews validation/external_holdout_reviews.json \
+            --profile "${{ steps.profile.outputs.profile }}" \
+            --json "validation/results/external-holdout-${{ steps.profile.outputs.profile }}.json" \
+            --markdown "validation/results/external-holdout-${{ steps.profile.outputs.profile }}.md"
+
+      - name: Add holdout summary
+        run: cat "validation/results/external-holdout-${{ steps.profile.outputs.profile }}.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload holdout evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: configreach-external-holdout-${{ steps.profile.outputs.profile }}
+          path: |
+            validation/results/external-holdout-${{ steps.profile.outputs.profile }}.json
+            validation/results/external-holdout-${{ steps.profile.outputs.profile }}.md
+          if-no-files-found: error

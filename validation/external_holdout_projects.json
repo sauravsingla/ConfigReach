@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-29",
+  "suite": {
+    "id": "external-holdout-v1",
+    "title": "ConfigReach external holdout validation",
+    "source": "Public GitHub repositories",
+    "selection_frozen_before_scan": true,
+    "selection_policy": "Predetermined cross-ecosystem holdout selected before ConfigReach results were examined. Projects must not overlap validation/real_world_projects.json, are pinned to immutable full commit SHAs, and are retained regardless of observed ConfigReach coverage.",
+    "profiles": {
+      "smoke": "Fast end-to-end sentinel for pull requests and pushes.",
+      "full": "All frozen holdout projects for scheduled and manual validation."
+    }
+  },
+  "projects": [
+    {
+      "repo": "apache/airflow",
+      "commit": "647add72afe204e0411d97c2fa121f1596012382",
+      "ecosystem": "Python",
+      "profiles": ["full"],
+      "source_url": "https://github.com/apache/airflow",
+      "rationale": "Large configuration-heavy orchestration application with extensive Python and deployment configuration."
+    },
+    {
+      "repo": "PrefectHQ/prefect",
+      "commit": "4f52bc6d0dd8186ca63bdd0552c5e21f05b483b2",
+      "ecosystem": "Python",
+      "profiles": ["full"],
+      "source_url": "https://github.com/PrefectHQ/prefect",
+      "rationale": "Modern Python settings-heavy application and workflow platform."
+    },
+    {
+      "repo": "vercel/next.js",
+      "commit": "b829c6189bc3af485cb92f0c3f3d09bf81a8e6fe",
+      "ecosystem": "JavaScript/TypeScript",
+      "profiles": ["full"],
+      "source_url": "https://github.com/vercel/next.js",
+      "rationale": "Large JavaScript/TypeScript framework with environment-driven build and runtime behavior."
+    },
+    {
+      "repo": "vitejs/vite",
+      "commit": "744269e5b2a155074910ddd275aecf2b83938496",
+      "ecosystem": "JavaScript/TypeScript",
+      "profiles": ["full"],
+      "source_url": "https://github.com/vitejs/vite",
+      "rationale": "Representative JavaScript/TypeScript toolchain with dotenv and environment-variable semantics."
+    },
+    {
+      "repo": "argoproj/argo-cd",
+      "commit": "c43b3318b42187e151392c1a2c38ac2ca4fbe28f",
+      "ecosystem": "Go/Kubernetes",
+      "profiles": ["full"],
+      "source_url": "https://github.com/argoproj/argo-cd",
+      "rationale": "Go application with Kubernetes, YAML and deployment-oriented configuration."
+    },
+    {
+      "repo": "spring-projects/spring-boot",
+      "commit": "ab1843bbf6d855ca066ea6b9ccf7e64b83139469",
+      "ecosystem": "Java/Spring",
+      "profiles": ["full"],
+      "source_url": "https://github.com/spring-projects/spring-boot",
+      "rationale": "Direct stress test of Spring configuration-property and Java environment support."
+    },
+    {
+      "repo": "dotnet/aspnetcore",
+      "commit": "bf676af7baa13fa4d06be384b4285d5406161219",
+      "ecosystem": ".NET/C#",
+      "profiles": ["full"],
+      "source_url": "https://github.com/dotnet/aspnetcore",
+      "rationale": "Large .NET codebase for IConfiguration, environment-variable and feature-management patterns."
+    },
+    {
+      "repo": "astral-sh/uv",
+      "commit": "f93fee64f612c1dc66f855bd22ecaa891ea00585",
+      "ecosystem": "Rust",
+      "profiles": ["full"],
+      "source_url": "https://github.com/astral-sh/uv",
+      "rationale": "Production Rust codebase with environment-driven CLI and tool behavior."
+    },
+    {
+      "repo": "rails/rails",
+      "commit": "7e1cb3bfa5c8dd4514eda14373ef4048cfd38eb9",
+      "ecosystem": "Ruby",
+      "profiles": ["full"],
+      "source_url": "https://github.com/rails/rails",
+      "rationale": "Mature Ruby framework exercising ENV access patterns and framework configuration."
+    },
+    {
+      "repo": "laravel/framework",
+      "commit": "2406fbfcc403c6f86268ee307713a1a14a7ae969",
+      "ecosystem": "PHP",
+      "profiles": ["full"],
+      "source_url": "https://github.com/laravel/framework",
+      "rationale": "Mature PHP framework with common env(...) and configuration-file patterns."
+    },
+    {
+      "repo": "terraform-aws-modules/terraform-aws-vpc",
+      "commit": "b3abd6df2ecf052451a361ed55b8f06f8742a795",
+      "ecosystem": "Terraform",
+      "profiles": ["smoke", "full"],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-vpc",
+      "rationale": "Focused Terraform module with variables, defaults and validation constraints."
+    }
+  ]
+}
