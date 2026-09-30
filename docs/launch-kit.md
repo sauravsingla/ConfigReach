@@ -9,6 +9,7 @@ Use this page as the source of truth for external launch copy. Keep claims align
 - Hugging Face Space: https://huggingface.co/spaces/sauravsingla08/ConfigReach
 - Validation Dataset: https://huggingface.co/datasets/sauravsingla08/configreach-validation
 - PyPI: https://pypi.org/project/configreach/
+- Zenodo archive: https://zenodo.org/records/23038726
 
 ## One-line positioning
 
@@ -50,6 +51,8 @@ GitHub: https://github.com/sauravsingla/ConfigReach
 
 Hugging Face project hub: https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage
 
+Archived research-software record: https://zenodo.org/records/23038726
+
 Feedback on the metric design, false-positive boundaries and CI ergonomics would be especially useful.
 
 ## LinkedIn
@@ -68,6 +71,8 @@ Project collection: https://huggingface.co/collections/sauravsingla08/configreac
 
 GitHub: https://github.com/sauravsingla/ConfigReach
 
+Zenodo: https://zenodo.org/records/23038726
+
 #SoftwareTesting #DevOps #GitHubActions #OpenSource #StaticAnalysis #CICD
 
 ## Product Hunt
@@ -84,7 +89,7 @@ ConfigReach complements code coverage by showing which runtime configuration inp
 
 I built ConfigReach around a simple observation: executing a line of code does not prove that the configuration states controlling that line were tested.
 
-The project publishes reproducible validation evidence, a Hugging Face dataset, a live project Space, PyPI package and GitHub Action integration. I would especially welcome feedback from teams using environment variables, feature flags and configuration-heavy CI pipelines.
+The project publishes reproducible validation evidence, a Hugging Face dataset, a live project Space, PyPI package, Zenodo archive and GitHub Action integration. I would especially welcome feedback from teams using environment variables, feature flags and configuration-heavy CI pipelines.
 
 ## Reddit / developer communities
 
@@ -103,6 +108,8 @@ The repository includes reproducible validation evidence and a frozen external h
 GitHub: https://github.com/sauravsingla/ConfigReach
 
 Validation collection: https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage
+
+Zenodo archive: https://zenodo.org/records/23038726
 
 I would be interested in edge cases where the configuration model breaks down, especially in large monorepos or feature-flag-heavy systems.
 
