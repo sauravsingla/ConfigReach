@@ -39,7 +39,7 @@ The dataset contains **derived measurements and provenance metadata only**. It d
 
 ## Snapshot
 
-- ConfigReach version: **{{VERSION}}**
+- Validation scanner version: **{{VERSION}}**
 - Captured at: **{{CAPTURED_AT}}**
 - External repositories: **{{PROJECTS}}**
 - Ecosystems: **{{ECOSYSTEMS}}**
@@ -48,6 +48,8 @@ The dataset contains **derived measurements and provenance metadata only**. It d
 - Aggregate observed configuration coverage: **{{COVERAGE_PCT}}**
 - Cumulative scanner runtime: **{{RUNTIME_SECONDS}}s (~{{SCANNER_HOURS}} scanner-hours)**
 - Validation source revision: **{{SOURCE_REVISION}}**
+
+The scanner version above records the ConfigReach version that produced this frozen validation evidence. It may be older than the current source release; historical evidence is not relabelled when ConfigReach advances.
 
 The aggregate configuration-coverage figure is the fraction of discovered configuration inputs for which ConfigReach linked test/runtime evidence. It is **not** a precision, recall, or F1 score.
 
