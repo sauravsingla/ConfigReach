@@ -1,5 +1,5 @@
 ---
-title: ConfigReach
+title: ConfigReach — Configuration Coverage
 emoji: 🎯
 colorFrom: blue
 colorTo: green
@@ -7,13 +7,19 @@ sdk: static
 app_file: index.html
 fullWidth: true
 header: mini
-pinned: false
+pinned: true
 license: mit
-short_description: Deterministic configuration coverage for software repos.
+short_description: CPU-only config coverage for env vars, feature flags & CI.
+datasets:
+  - sauravsingla08/configreach-validation
 tags:
   - developer-tools
+  - software-testing
   - testing
+  - devops
+  - ci-cd
   - configuration
+  - configuration-coverage
   - static-analysis
   - github-actions
   - cpu
@@ -21,7 +27,7 @@ tags:
   - feature-flags
 ---
 
-# ConfigReach
+# ConfigReach — Configuration Coverage
 
 **Codecov for configuration space.**
 
@@ -68,6 +74,7 @@ This is deliberately a **small corpus-specific measurement, not a claim of unive
 
 ## Project links
 
+- [Hugging Face validation dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
 - [GitHub repository](https://github.com/sauravsingla/ConfigReach)
 - [PyPI package](https://pypi.org/project/configreach/)
 - [Validation methodology](https://github.com/sauravsingla/ConfigReach/blob/main/VALIDATION.md)
