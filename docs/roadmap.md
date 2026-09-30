@@ -22,7 +22,7 @@
 - Explicit pairwise value-state coverage based on test scenarios.
 - Merge-base vs current-tree PR scanning for newly introduced keys, removed keys and changed value/default/branch domains.
 - Findings for explicit default-only testing and global-environment test mutation.
-- Initial cross-version cache schema invalidation and Python 3.11–3.13 CI coverage (later expanded to Python 3.8–3.14).
+- Initial cross-version cache schema invalidation and Python 3.11–3.13 CI coverage (later expanded to Python 3.10–3.14).
 
 ## v0.4 — deeper language and framework semantics ✅
 - Function-scoped deterministic JavaScript/TypeScript and Go adapters while preserving a core without optional parser dependencies.
@@ -72,7 +72,7 @@
 - Additional Adapter API v1 examples: parser-backed tree-sitter Go plus a custom `.featureflags` configuration provider.
 - Offline compatibility corpus covering Python/env, polyglot deployment, Spring/.NET and JSON-Schema-style configuration surfaces.
 - Provenance-rich performance history artifacts retained from GitHub-hosted CPU budget runs.
-- Python 3.8–3.14 runtime, packaging, plugin, Action and container compatibility matrices, with `tomli` used only as a Python <3.11 backport.
+- Python 3.10–3.14 runtime, packaging, plugin, Action and container compatibility matrices, with `tomli` used only as the Python 3.10 backport.
 
 ## v1.0
 - Stable report, workspace and planning schemas.
