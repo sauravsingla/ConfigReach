@@ -3,8 +3,7 @@ name: ConfRCA external benchmark
 on:
   push:
     branches:
-      - validation/confrca-benchmark
-      - validation/confrca-fix
+      - main
     paths:
       - "validation/confrca/**"
       - ".github/workflows/confrca-benchmark.yml"
