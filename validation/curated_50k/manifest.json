@@ -1,67 +1,39 @@
 {
-  "description": "Controlled curated benchmark with deterministic ground-truth labels for configuration-input detection.",
   "expected_negative": 25000,
   "expected_positive": 25000,
+  "generation": "validation/curated_50k/generate_dataset.py",
+  "ground_truth": "deterministic expected_detect and expected_key labels per scenario",
   "group_counts": {
-    "C#": 3270,
-    "Dockerfile/Containerfile": 1093,
-    "GitHub Actions": 1088,
-    "Go": 3248,
-    "Helm": 1105,
-    "INI/CFG": 1100,
-    "JSON": 1108,
-    "JSON Schema": 1085,
-    "Java": 3222,
-    "Java properties": 1101,
-    "JavaScript": 3240,
-    "Kotlin": 3266,
-    "Kubernetes": 1098,
-    "Make": 1092,
-    "PHP": 3239,
-    "Python": 3240,
-    "Ruby": 3273,
-    "Rust": 3262,
-    "Shell": 3239,
-    "TOML": 1098,
-    "Terraform": 1089,
-    "TypeScript": 3270,
-    "YAML": 1083,
-    "dotenv": 1091
+    "C#": 2084,
+    "Dockerfile/Containerfile": 2083,
+    "GitHub Actions": 2083,
+    "Go": 2084,
+    "Helm": 2083,
+    "INI/CFG": 2083,
+    "JSON": 2083,
+    "JSON Schema": 2083,
+    "Java": 2084,
+    "Java properties": 2083,
+    "JavaScript": 2084,
+    "Kotlin": 2084,
+    "Kubernetes": 2083,
+    "Make": 2083,
+    "PHP": 2083,
+    "Python": 2084,
+    "Ruby": 2083,
+    "Rust": 2084,
+    "Shell": 2083,
+    "TOML": 2083,
+    "Terraform": 2083,
+    "TypeScript": 2084,
+    "YAML": 2083,
+    "dotenv": 2083
   },
-  "jsonl_bytes": 33181918,
-  "jsonl_sha256": "97a0554fe3cbcc974c15513c97fda8b4f816777badc104133bdae8115948ed39",
-  "label_semantics": {
-    "negative": "expected key should not be detected",
-    "positive": "expected key should be detected"
-  },
+  "jsonl_bytes": 10863912,
+  "jsonl_sha256": "b2948a4cbf4d8d6263c3347ca4bd4c5d37d645a17cad88b2859cabe0a7b2392e",
   "name": "ConfigReach Curated 50K Benchmark",
-  "provenance_note": "Curated controlled benchmark generated programmatically from explicit scenario families; not an independently human-labelled real-world corpus.",
+  "provenance_note": "Controlled curated benchmark generated programmatically from explicit scenario families; not an independently human-labelled real-world corpus.",
   "scenario_count": 50000,
-  "shards": [
-    {
-      "bytes": 402549,
-      "name": "configreach_50k_scenarios.jsonl.xz.part-00.b64",
-      "sha256": "a428f6e560aaf5b42b704723a89760b66dfba4b050dcd44535d2c8a6b9b4601d"
-    },
-    {
-      "bytes": 402549,
-      "name": "configreach_50k_scenarios.jsonl.xz.part-01.b64",
-      "sha256": "b529968438aa7f35dd61b59ffa600ca7190a2f80a1a3a618b541444874adbec0"
-    },
-    {
-      "bytes": 402549,
-      "name": "configreach_50k_scenarios.jsonl.xz.part-02.b64",
-      "sha256": "a1d70266f170549afd0e6e045e00ba8edb2d42b84147ada48ca227c194e10609"
-    },
-    {
-      "bytes": 402549,
-      "name": "configreach_50k_scenarios.jsonl.xz.part-03.b64",
-      "sha256": "ea9207f950b8fe4bec0edff434c642a07b46fbf918115b3a085938aca1b7f114"
-    }
-  ],
-  "transport": "XZ bytes split into 4 chunks; each chunk base64-encoded as a Git-friendly UTF-8 shard. rebuild_dataset.py verifies and reconstructs the exact JSONL.",
   "unique_expected_keys": 50000,
-  "unique_scenario_ids": 50000,
-  "xz_bytes": 1207636,
-  "xz_sha256": "04fd44fc6e9526ec0717c834df9d4442e01de831200259e665bd2e937ef03350"
+  "unique_scenario_ids": 50000
 }
