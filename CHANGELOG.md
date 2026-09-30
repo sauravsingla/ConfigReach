@@ -4,6 +4,25 @@ All notable ConfigReach changes are documented here. The project follows semanti
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-09-30
+
+### Added
+- Added first-class CPython 3.10, 3.11, 3.12, 3.13 and 3.14 compatibility matrices across core tests, wheel/sdist validation, example plugins, the composite GitHub Action and Docker builds.
+- Added mandatory cross-version `pip-audit` vulnerability checks and dependency-license policy checks for the supported Python matrix.
+- Added post-publication PyPI installation, metadata and CLI verification across every supported Python version before the GitHub Release is created.
+
+### Changed
+- Set package metadata and documentation support policy to Python 3.10–3.14, intentionally excluding Python 3.8 and 3.9.
+- Python 3.10 uses the pinned `tomli` backport while Python 3.11+ uses standard-library `tomllib`.
+- Pinned release-critical GitHub Actions and compatibility-sensitive build/test dependencies.
+- Hardened the release workflow so `pyproject.toml` metadata-only changes cannot accidentally republish an unchanged package version.
+
+### Security
+- Replaced unrestricted archive extraction fallbacks with a cross-version safe extractor that rejects traversal, absolute/drive paths, links, devices and special members.
+- Prevented repository scans from following file symlinks outside the target repository.
+- Constrained repository-controlled config/baseline paths to the repository root and validated Git revision arguments before subprocess use.
+- Added regression coverage for archive traversal/link attacks, symlink escapes, path escapes and Git option injection.
+
 ## [0.9.3] - 2026-09-30
 
 ### Added
@@ -62,7 +81,8 @@ All notable ConfigReach changes are documented here. The project follows semanti
 - Cross-platform reproducibility verification.
 - Optional tree-sitter JavaScript adapter example.
 
-[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.4...HEAD
+[0.9.4]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.1
