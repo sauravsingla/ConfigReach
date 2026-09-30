@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use ConfigReach in research or engineering evaluation, please cite this software and the version you used."
+title: "ConfigReach"
+type: software
+authors:
+  - family-names: "Singla"
+    given-names: "Saurav"
+version: "0.9.2"
+date-released: "2026-09-29"
+license: MIT
+repository-code: "https://github.com/sauravsingla/ConfigReach"
+url: "https://github.com/sauravsingla/ConfigReach"
+abstract: >-
+  ConfigReach is a deterministic, CPU-only configuration coverage analyzer for
+  software repositories. It identifies environment variables, feature flags,
+  configuration declarations, CLI options and configuration-dependent states,
+  then maps them to test or runtime evidence.
+keywords:
+  - configuration coverage
+  - configuration testing
+  - environment variables
+  - feature flags
+  - static analysis
+  - software testing
+  - continuous integration
