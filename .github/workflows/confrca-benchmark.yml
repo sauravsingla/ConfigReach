@@ -26,10 +26,12 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
-      - name: Install ConfigReach and benchmark dependency
-        run: python -m pip install -e . pyarrow
-      - name: Refresh ConfRCA and run external benchmark
-        run: python validation/confrca/run_confrca_benchmark.py --refresh-dataset
+      - name: Install ConfigReach and benchmark dependencies
+        run: python -m pip install -e ".[dev]" pyarrow
+      - name: Download and freeze public ConfRCA snapshot
+        run: python validation/confrca/refresh_public_snapshot.py
+      - name: Run ConfRCA external benchmark
+        run: python validation/confrca/run_confrca_benchmark.py
       - name: Run focused unit tests
         run: pytest -q tests/test_confrca_benchmark.py
       - name: Show generated benchmark summary
