@@ -12,10 +12,8 @@ description = "Example optional tree-sitter Go adapter for ConfigReach"
 requires-python = ">=3.8"
 dependencies = [
   "configreach>=0.9",
-  "tree-sitter==0.21.3; python_version == '3.8'",
-  "tree-sitter-go==0.21.2; python_version == '3.8'",
-  "tree-sitter==0.25.2; python_version == '3.9'",
-  "tree-sitter-go==0.23.4; python_version == '3.9'",
+  "tree-sitter==0.21.3; python_version < '3.10'",
+  "tree-sitter-go==0.21.2; python_version < '3.10'",
   "tree-sitter==0.26.0; python_version >= '3.10'",
   "tree-sitter-go==0.25.0; python_version >= '3.10'",
 ]
