@@ -45,17 +45,15 @@ def build(output_dir: Path) -> None:
     accuracy = load_json(ACCURACY_PATH)
     project = tomllib.loads(PROJECT_PATH.read_text(encoding="utf-8"))
 
-    version = project["project"]["version"]
+    source_version = project["project"]["version"]
     holdout_tool = holdout.get("tool", {})
     accuracy_tool = accuracy.get("tool", {})
+    validation_version = holdout_tool.get("version")
 
+    require(bool(validation_version), "external holdout tool version is missing")
     require(
-        holdout_tool.get("version") == version,
-        "external holdout tool version does not match pyproject version",
-    )
-    require(
-        accuracy_tool.get("version") == version,
-        "accuracy tool version does not match pyproject version",
+        accuracy_tool.get("version") == validation_version,
+        "accuracy tool version does not match external holdout tool version",
     )
 
     projects = holdout["projects"]
@@ -126,7 +124,7 @@ def build(output_dir: Path) -> None:
                 "runtime_seconds": item["runtime_seconds"],
                 "source_url": item["source_url"],
                 "warnings": item.get("warnings", []),
-                "configreach_version": version,
+                "configreach_version": validation_version,
                 "captured_at": holdout["captured_at"],
                 "validation_source_revision": source_revision,
             }
@@ -152,7 +150,8 @@ def build(output_dir: Path) -> None:
         output_dir / "metadata/summary.json",
         {
             "captured_at": holdout["captured_at"],
-            "configreach_version": version,
+            "configreach_version": validation_version,
+            "current_source_version": source_version,
             "source_revision": source_revision,
             "projects": len(projects),
             "ecosystems": len({item["ecosystem"] for item in projects}),
@@ -165,11 +164,11 @@ def build(output_dir: Path) -> None:
         },
     )
     write_json(output_dir / "metadata/external-holdout-full.json", holdout)
-    (output_dir / "VERSION").write_text(version + "\n", encoding="utf-8")
+    (output_dir / "VERSION").write_text(str(validation_version) + "\n", encoding="utf-8")
 
     coverage_pct = covered_inputs / total_inputs * 100 if total_inputs else 100.0
     replacements = {
-        "{{VERSION}}": version,
+        "{{VERSION}}": str(validation_version),
         "{{CAPTURED_AT}}": str(holdout["captured_at"]),
         "{{PROJECTS}}": f"{len(projects):,}",
         "{{ECOSYSTEMS}}": f"{len({item['ecosystem'] for item in projects}):,}",
@@ -198,7 +197,8 @@ def build(output_dir: Path) -> None:
     print(
         "Built Hugging Face dataset: "
         f"{len(rows)} rows, {len({item['ecosystem'] for item in projects})} ecosystems, "
-        f"{total_inputs:,} inputs, {covered_inputs:,} covered, {coverage_pct:.2f}% coverage"
+        f"{total_inputs:,} inputs, {covered_inputs:,} covered, {coverage_pct:.2f}% coverage; "
+        f"validation version {validation_version}, current source version {source_version}"
     )
 
 
