@@ -32,7 +32,6 @@
   "jsonl_bytes": 10863912,
   "jsonl_sha256": "b2948a4cbf4d8d6263c3347ca4bd4c5d37d645a17cad88b2859cabe0a7b2392e",
   "name": "ConfigReach Curated 50K Benchmark",
-  "provenance_note": "Controlled curated benchmark generated programmatically from explicit scenario families; not an independently human-labelled real-world corpus.",
   "scenario_count": 50000,
   "unique_expected_keys": 50000,
   "unique_scenario_ids": 50000

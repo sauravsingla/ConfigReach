@@ -1,0 +1,801 @@
+{
+  "by_group": {
+    "C#": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2084
+    },
+    "Dockerfile/Containerfile": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "GitHub Actions": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "Go": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2084,
+      "tp": 0
+    },
+    "Helm": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "INI/CFG": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "JSON": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "JSON Schema": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "Java": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2084
+    },
+    "Java properties": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "JavaScript": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2084,
+      "tp": 0
+    },
+    "Kotlin": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2084,
+      "tp": 0
+    },
+    "Kubernetes": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "Make": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "PHP": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "Python": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2084
+    },
+    "Ruby": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "Rust": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2084,
+      "tp": 0
+    },
+    "Shell": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "TOML": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "Terraform": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "TypeScript": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2084
+    },
+    "YAML": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "dotenv": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    }
+  },
+  "by_variant": {
+    "C#::environment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "C#::getvalue": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 694
+    },
+    "C#::iconfiguration": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "Dockerfile/Containerfile::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 1042,
+      "tp": 0
+    },
+    "Dockerfile/Containerfile::literal": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 1041,
+      "tp": 0
+    },
+    "GitHub Actions::secrets": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 1041
+    },
+    "GitHub Actions::vars": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 1042
+    },
+    "Go::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "Go::custom": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "Go::dynamic": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "Go::raw": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "Helm::value": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "INI/CFG::option": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "JSON Schema::description": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "JSON::key": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "Java properties::value": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "Java::getenv": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "Java::property": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "Java::spring": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 694
+    },
+    "JavaScript::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "JavaScript::custom": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "JavaScript::dynamic": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "JavaScript::string": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "Kotlin::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 695,
+      "tp": 0
+    },
+    "Kotlin::custom": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 694,
+      "tp": 0
+    },
+    "Kotlin::literal": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 695,
+      "tp": 0
+    },
+    "Kubernetes::env_name": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "Make::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 1042,
+      "tp": 0
+    },
+    "Make::value": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 1041,
+      "tp": 0
+    },
+    "PHP::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "PHP::member": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "PHP::static": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 520,
+      "tp": 0
+    },
+    "PHP::string": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 521,
+      "tp": 0
+    },
+    "Python::environ": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "Python::environ_get": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 694
+    },
+    "Python::getenv": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "Ruby::fetch": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 694
+    },
+    "Ruby::index": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 695
+    },
+    "Ruby::interpolation": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 694
+    },
+    "Rust::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 695,
+      "tp": 0
+    },
+    "Rust::custom": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 694,
+      "tp": 0
+    },
+    "Rust::raw": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 695,
+      "tp": 0
+    },
+    "Shell::brace": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 1042
+    },
+    "Shell::plain": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 1041
+    },
+    "TOML::value": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 2083,
+      "tp": 0
+    },
+    "Terraform::variable": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "TypeScript::bun": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 416
+    },
+    "TypeScript::deno": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 417
+    },
+    "TypeScript::process_dot": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 417
+    },
+    "TypeScript::process_index": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 417
+    },
+    "TypeScript::template": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 417
+    },
+    "YAML::uppercase": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 0,
+      "tp": 2083
+    },
+    "dotenv::comment": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 1042,
+      "tp": 0
+    },
+    "dotenv::value": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tn": 1041,
+      "tp": 0
+    }
+  },
+  "overall": {
+    "accuracy": 1.0,
+    "f1": 1.0,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tn": 25000,
+    "tp": 25000
+  },
+  "scanner": {
+    "entry_point": "configreach.engine.scan",
+    "semantic_engine": "v0.9"
+  },
+  "scenario_count": 50000
+}
