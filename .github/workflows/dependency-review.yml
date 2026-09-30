@@ -48,6 +48,11 @@ jobs:
           python -m pip install -e examples/plugins/tree_sitter_js
           python -m pip install -e examples/plugins/tree_sitter_go
           python -m pip check
+          # Freeze only non-editable third-party packages before adding the
+          # audit tools themselves. This is the exact external dependency set
+          # ConfigReach/dev/plugins resolved on this interpreter.
+          python -m pip freeze --exclude-editable > /tmp/configreach-audit-requirements.txt
+          test -s /tmp/configreach-audit-requirements.txt
 
       - name: Install pinned security-audit tooling
         run: |
@@ -57,10 +62,10 @@ jobs:
 
       - name: Fail on known Python dependency vulnerabilities
         run: |
-          # ConfigReach and its example plugins are editable local source trees,
-          # not PyPI distributions. Their external dependencies remain in the
-          # environment and are audited; project source is covered by CodeQL.
-          python -m pip_audit --strict --skip-editable --progress-spinner off
+          python -m pip_audit \
+            --strict \
+            --requirement /tmp/configreach-audit-requirements.txt \
+            --progress-spinner off
 
       - name: Fail on denied dependency licenses
         shell: bash
@@ -68,12 +73,29 @@ jobs:
           pip-licenses --format=json --output-file=/tmp/configreach-licenses.json
           python - <<'PY'
           import json
+          import re
           from pathlib import Path
+
+          normalize = lambda value: re.sub(r"[-_.]+", "-", value).lower()
+          dependency_names = set()
+          for line in Path("/tmp/configreach-audit-requirements.txt").read_text(encoding="utf-8").splitlines():
+              line = line.strip()
+              if not line or line.startswith("#"):
+                  continue
+              name = re.split(r"[<>=!~ @]", line, maxsplit=1)[0]
+              if name:
+                  dependency_names.add(normalize(name))
 
           denied_tokens = ("AGPL", "AFFERO GENERAL PUBLIC LICENSE", "SSPL", "SERVER SIDE PUBLIC LICENSE")
           records = json.loads(Path("/tmp/configreach-licenses.json").read_text(encoding="utf-8"))
+          audited = [record for record in records if normalize(str(record.get("Name", ""))) in dependency_names]
+          present = {normalize(str(record.get("Name", ""))) for record in audited}
+          missing = dependency_names - present
+          if missing:
+              raise SystemExit("License metadata missing for dependencies: " + ", ".join(sorted(missing)))
+
           denied = []
-          for record in records:
+          for record in audited:
               license_text = str(record.get("License", "")).upper()
               if any(token in license_text for token in denied_tokens):
                   denied.append(f"{record.get('Name')}=={record.get('Version')}: {record.get('License')}")
