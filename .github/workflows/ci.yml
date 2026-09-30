@@ -39,3 +39,33 @@ jobs:
       - run: configreach schema --kind capabilities --check /tmp/configreach-adapters.json
       - run: configreach schema --kind reproducibility --check /tmp/configreach-repro.json
       - run: configreach doctor examples/polyglot
+
+  confrca-bootstrap:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/validation/confrca-fix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install benchmark dependencies
+        run: python -m pip install -e ".[dev]" pyarrow
+      - name: Verify Git LFS
+        run: git lfs version
+      - name: Freeze ConfRCA public snapshot
+        run: python validation/confrca/refresh_public_snapshot.py
+      - name: Run ConfRCA benchmark
+        run: python validation/confrca/run_confrca_benchmark.py
+      - name: Run focused tests
+        run: pytest -q tests/test_confrca_benchmark.py
+      - name: Upload benchmark evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: confrca-bootstrap-evidence
+          path: |
+            validation/confrca/data/
+            validation/results/confrca.json
+            validation/results/confrca.md
+          if-no-files-found: error
+          retention-days: 7
