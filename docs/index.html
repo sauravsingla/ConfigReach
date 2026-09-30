@@ -18,7 +18,7 @@
 <header class="top"><div class="wrap"><nav><a class="brand" href="#top"><span class="mark"></span>ConfigReach</a><div class="navlinks"><a class="hide-sm" href="#validation">Validation</a><a class="hide-sm" href="#accuracy">Accuracy</a><a href="#install">Install</a><a href="https://huggingface.co/datasets/sauravsingla08/configreach-validation" target="_blank" rel="noopener noreferrer">Dataset ↗</a><a href="https://github.com/sauravsingla/ConfigReach" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></nav></div></header>
 <main id="top">
   <section class="hero"><div class="wrap">
-    <div class="badge">v0.9.3 · MIT · CPU-only · zero runtime dependencies</div>
+    <div class="badge">v0.9.3 · MIT · CPU-only · Python 3.8–3.14</div>
     <h1><span class="grad">Configuration coverage, measured deterministically.</span></h1>
     <p class="lede">High code coverage does not guarantee high configuration coverage. ConfigReach finds runtime configuration inputs, values, branches and important combinations, then maps them to test evidence without an LLM, GPU, API key or hosted service.</p>
     <div class="actions"><a class="btn primary" href="https://pypi.org/project/configreach/" target="_blank" rel="noopener noreferrer">Install from PyPI ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/VALIDATION.md" target="_blank" rel="noopener noreferrer">Validation methodology ↗</a><a class="btn" href="https://huggingface.co/datasets/sauravsingla08/configreach-validation" target="_blank" rel="noopener noreferrer">Explore validation dataset ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach" target="_blank" rel="noopener noreferrer">View source ↗</a></div>
@@ -62,7 +62,7 @@
   </div></section>
 
   <section id="install"><div class="wrap">
-    <div class="kicker">Quick start</div><h2 class="title">Install locally and scan.</h2><p class="intro">ConfigReach v0.9.3 source supports Python 3.11+ and keeps the core model-free and dependency-free at runtime.</p>
+    <div class="kicker">Quick start</div><h2 class="title">Install locally and scan.</h2><p class="intro">ConfigReach v0.9.3 source supports Python 3.8–3.14. Python 3.11+ uses the standard library at runtime; Python 3.8–3.10 adds only the pinned <code>tomli</code> TOML backport.</p>
     <div class="terminal"><div class="termbar">configreach — local CLI</div><pre><span class="cmd">$ python -m pip install --upgrade configreach</span>
 <span class="cmd">$ configreach scan .</span>
 <span class="cmd">$ configreach coverage .</span>
