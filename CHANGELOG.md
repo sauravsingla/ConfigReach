@@ -4,6 +4,21 @@ All notable ConfigReach changes are documented here. The project follows semanti
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-09-30
+
+### Added
+- Added tested CPython 3.10–3.14 compatibility across the package, CLI, example plugins, Docker builds and GitHub Action.
+- Added enforced Python dependency vulnerability and denied-license audits across every supported interpreter.
+- Added post-publication PyPI install, metadata and CLI verification across Python 3.10–3.14.
+- Added security regression coverage for archive traversal/link attacks, repository-boundary symlinks, repository-controlled path escapes and Git revision option injection.
+
+### Changed
+- Set `Requires-Python` and PyPI classifiers to the supported Python 3.10–3.14 range; Python 3.10 uses the pinned `tomli` backport while Python 3.11+ uses `tomllib`.
+- Hardened repository scanning so symlinked files cannot escape the scan root.
+- Replaced unrestricted archive extraction paths with a cross-version safe extractor that only writes regular files/directories beneath the destination.
+- Pinned compatibility-sensitive toolchains and release-critical GitHub Actions while preserving CodeQL, reproducibility, container scanning, SBOM/provenance and Trusted Publishing controls.
+- Hardened release automation so metadata-only `pyproject.toml` changes cannot republish an unchanged version.
+
 ## [0.9.3] - 2026-09-30
 
 ### Added
@@ -62,7 +77,8 @@ All notable ConfigReach changes are documented here. The project follows semanti
 - Cross-platform reproducibility verification.
 - Optional tree-sitter JavaScript adapter example.
 
-[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.4...HEAD
+[0.9.4]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.1
