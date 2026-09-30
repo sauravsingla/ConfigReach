@@ -22,10 +22,10 @@
 - Explicit pairwise value-state coverage based on test scenarios.
 - Merge-base vs current-tree PR scanning for newly introduced keys, removed keys and changed value/default/branch domains.
 - Findings for explicit default-only testing and global-environment test mutation.
-- Cross-version cache schema invalidation and Python 3.11–3.13 CI coverage.
+- Initial cross-version cache schema invalidation and Python 3.11–3.13 CI coverage (later expanded to Python 3.8–3.14).
 
 ## v0.4 — deeper language and framework semantics ✅
-- Function-scoped deterministic JavaScript/TypeScript and Go adapters while preserving a zero-runtime-dependency core.
+- Function-scoped deterministic JavaScript/TypeScript and Go adapters while preserving a core without optional parser dependencies.
 - Java Spring discovery for `@Value`, `Environment.getProperty`, `@ConfigurationProperties` and common feature-flag calls.
 - .NET/C# discovery for environment variables, `IConfiguration`, `GetValue` defaults and feature flags.
 - JSON Schema finite-domain/default/validator extraction.
@@ -52,7 +52,7 @@
 ## v0.7 — adapter ecosystem and reproducibility ✅
 - Adapter API v1 with explicit compatibility version, parser identity, determinism declaration and capability metadata.
 - `configreach adapters` machine-readable diagnostics for built-ins and installed plugins.
-- Optional parser-backed tree-sitter JavaScript adapter example kept outside the zero-dependency core.
+- Optional parser-backed tree-sitter JavaScript adapter example kept outside the core package dependency set.
 - `configreach reproduce` canonical SHA-256 verification across repeated uncached scans.
 - Cross-platform reproducibility workflow comparing Ubuntu, macOS and Windows canonical digests.
 - Versioned built-in adapter capability schema.
@@ -72,6 +72,7 @@
 - Additional Adapter API v1 examples: parser-backed tree-sitter Go plus a custom `.featureflags` configuration provider.
 - Offline compatibility corpus covering Python/env, polyglot deployment, Spring/.NET and JSON-Schema-style configuration surfaces.
 - Provenance-rich performance history artifacts retained from GitHub-hosted CPU budget runs.
+- Python 3.8–3.14 runtime, packaging, plugin, Action and container compatibility matrices, with `tomli` used only as a Python <3.11 backport.
 
 ## v1.0
 - Stable report, workspace and planning schemas.
