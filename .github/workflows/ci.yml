@@ -8,34 +8,118 @@ permissions:
 
 jobs:
   test:
+    name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e ".[dev]"
-      - run: python -m compileall -q src tests tools benchmarks
-      - run: python -m py_compile examples/plugins/tree_sitter_js/configreach_tree_sitter_js.py examples/plugins/tree_sitter_go/configreach_tree_sitter_go.py examples/plugins/feature_flags_provider/configreach_feature_flags.py
-      - run: pytest
-      - run: configreach scan examples/basic --format json --output /tmp/configreach-report.json --no-cache
-      - run: configreach scan examples/polyglot --format sarif --output /tmp/configreach.sarif --no-cache
-      - run: configreach scan examples/polyglot --format html --output /tmp/configreach.html --no-cache
-      - run: configreach scan examples/frameworks --format json --output /tmp/configreach-frameworks.json --no-cache
-      - run: configreach plan examples/combinations --format json --output /tmp/configreach-plan.json --no-cache
-      - run: configreach plan examples/combinations --fixture pytest --output /tmp/configreach-fixtures.py --no-cache
-      - run: configreach plan examples/combinations --fixture junit --output /tmp/ConfigReachCases.java --no-cache
-      - run: configreach plan examples/combinations --fixture xunit --output /tmp/ConfigReachCases.cs --no-cache
-      - run: configreach workspace . --format json --output /tmp/configreach-workspaces.json --no-cache
-      - run: configreach adapters --format json --output /tmp/configreach-adapters.json
-      - run: configreach reproduce examples/combinations --runs 3 --format json --output /tmp/configreach-repro.json
-      - run: configreach schema --format json --output /tmp/configreach-schemas.json
-      - run: configreach schema --kind report --check /tmp/configreach-report.json
-      - run: configreach schema --kind plan --check /tmp/configreach-plan.json
-      - run: configreach schema --kind workspace --check /tmp/configreach-workspaces.json
-      - run: configreach schema --kind capabilities --check /tmp/configreach-adapters.json
-      - run: configreach schema --kind reproducibility --check /tmp/configreach-repro.json
-      - run: configreach doctor examples/polyglot
+          cache: pip
+      - name: Install ConfigReach and version-compatible development tools
+        run: python -m pip install -e ".[dev]"
+      - name: Verify dependency environment
+        run: python -m pip check
+      - name: Compile project, tests, tools, benchmarks and plugins
+        run: |
+          python -m compileall -q src tests tools benchmarks scripts validation
+          python -m py_compile examples/plugins/tree_sitter_js/configreach_tree_sitter_js.py examples/plugins/tree_sitter_go/configreach_tree_sitter_go.py examples/plugins/feature_flags_provider/configreach_feature_flags.py
+      - name: Run full test suite
+        run: pytest
+      - name: Run CLI integration suite
+        run: |
+          configreach --version
+          configreach --help >/tmp/configreach-help.txt
+          configreach scan examples/basic --format json --output /tmp/configreach-report.json --no-cache
+          configreach scan examples/polyglot --format sarif --output /tmp/configreach.sarif --no-cache
+          configreach scan examples/polyglot --format html --output /tmp/configreach.html --no-cache
+          configreach scan examples/frameworks --format json --output /tmp/configreach-frameworks.json --no-cache
+          configreach plan examples/combinations --format json --output /tmp/configreach-plan.json --no-cache
+          configreach plan examples/combinations --fixture pytest --output /tmp/configreach-fixtures.py --no-cache
+          configreach plan examples/combinations --fixture junit --output /tmp/ConfigReachCases.java --no-cache
+          configreach plan examples/combinations --fixture xunit --output /tmp/ConfigReachCases.cs --no-cache
+          configreach workspace . --format json --output /tmp/configreach-workspaces.json --no-cache
+          configreach adapters --format json --output /tmp/configreach-adapters.json
+          configreach reproduce examples/combinations --runs 3 --format json --output /tmp/configreach-repro.json
+          configreach schema --format json --output /tmp/configreach-schemas.json
+          configreach schema --kind report --check /tmp/configreach-report.json
+          configreach schema --kind plan --check /tmp/configreach-plan.json
+          configreach schema --kind workspace --check /tmp/configreach-workspaces.json
+          configreach schema --kind capabilities --check /tmp/configreach-adapters.json
+          configreach schema --kind reproducibility --check /tmp/configreach-repro.json
+          configreach doctor examples/polyglot
+      - name: Build source distribution and wheel
+        run: python -m build --sdist --wheel
+      - name: Validate and install built wheel
+        shell: bash
+        run: |
+          wheel="$(find dist -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$wheel"
+          python -m pip install --force-reinstall "$wheel"
+          python -m pip check
+          python - <<'PY'
+          import importlib.metadata as metadata
+          import configreach
+          requires_python = metadata.metadata("configreach").get("Requires-Python")
+          assert requires_python == ">=3.10", requires_python
+          assert configreach.__version__ == "0.9.3", configreach.__version__
+          PY
+          configreach --version
+          configreach scan examples/basic --format json --output /tmp/configreach-wheel-report.json --no-cache
+          python -m json.tool /tmp/configreach-wheel-report.json >/dev/null
+
+  plugins:
+    name: Plugins / Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install core and example plugins
+        run: |
+          python -m pip install -e .
+          python -m pip install -e examples/plugins/feature_flags_provider
+          python -m pip install -e examples/plugins/tree_sitter_js
+          python -m pip install -e examples/plugins/tree_sitter_go
+          python -m pip check
+      - name: Verify plugin discovery and parser execution
+        run: |
+          configreach adapters --format json --output /tmp/configreach-plugins.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("/tmp/configreach-plugins.json").read_text(encoding="utf-8"))
+          names = {item["name"] for item in data["plugins"]}
+          required = {"feature-flags-file", "tree-sitter-js", "tree-sitter-go"}
+          missing = required - names
+          assert not missing, f"missing plugins: {sorted(missing)}; warnings={data.get('warnings')}"
+          PY
+          configreach scan examples/polyglot --format json --output /tmp/configreach-plugin-scan.json --no-cache
+          python -m json.tool /tmp/configreach-plugin-scan.json >/dev/null
+
+  docker:
+    name: Docker / Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build compatibility image
+        run: docker build --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t configreach:py${{ matrix.python-version }} .
+      - name: Smoke test compatibility image
+        run: |
+          docker run --rm configreach:py${{ matrix.python-version }} --version
+          docker run --rm configreach:py${{ matrix.python-version }} --help >/tmp/configreach-docker-help.txt
+          test -s /tmp/configreach-docker-help.txt

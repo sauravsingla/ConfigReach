@@ -7,18 +7,98 @@ permissions:
   contents: read
 
 jobs:
-  dependency-review:
+  github-dependency-review:
+    name: GitHub dependency review
     runs-on: ubuntu-latest
     steps:
-      - name: Review dependency changes
+      - name: Review dependency changes when Dependency Graph is available
         id: review
         continue-on-error: true
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           fail-on-severity: high
+          deny-licenses: AGPL-1.0-only, AGPL-1.0-or-later, SSPL-1.0
 
-      - name: Explain unavailable dependency graph
+      - name: Record Dependency Graph limitation
         if: steps.review.outcome == 'failure'
         run: |
-          echo "::warning::GitHub Dependency Review is unavailable until the repository Dependency graph is enabled. Dependabot, CodeQL, OpenSSF Scorecard and container scanning remain active."
-          echo "Dependency Review will begin enforcing high-severity dependency changes automatically once GitHub's Dependency graph is enabled."
+          echo "::warning::GitHub Dependency Review could not run. This repository currently has Dependency Graph disabled."
+          echo "The mandatory Python 3.10-3.14 pip-audit and license-audit matrix below remains an enforced security gate."
+
+  python-dependency-audit:
+    name: Python dependency audit / ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install the actual supported dependency graph
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pip install -e examples/plugins/feature_flags_provider
+          python -m pip install -e examples/plugins/tree_sitter_js
+          python -m pip install -e examples/plugins/tree_sitter_go
+          python -m pip check
+          # Freeze only non-editable third-party packages before adding the
+          # audit tools themselves. This is the exact external dependency set
+          # ConfigReach/dev/plugins resolved on this interpreter.
+          python -m pip freeze --exclude-editable > /tmp/configreach-audit-requirements.txt
+          test -s /tmp/configreach-audit-requirements.txt
+
+      - name: Install pinned security-audit tooling
+        run: |
+          python -m pip install \
+            "pip-audit==2.10.1" \
+            "pip-licenses==5.5.5"
+
+      - name: Fail on known Python dependency vulnerabilities
+        run: |
+          python -m pip_audit \
+            --strict \
+            --requirement /tmp/configreach-audit-requirements.txt \
+            --progress-spinner off
+
+      - name: Fail on denied dependency licenses
+        shell: bash
+        run: |
+          pip-licenses --with-system --format=json --output-file=/tmp/configreach-licenses.json
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          normalize = lambda value: re.sub(r"[-_.]+", "-", value).lower()
+          dependency_names = set()
+          for line in Path("/tmp/configreach-audit-requirements.txt").read_text(encoding="utf-8").splitlines():
+              line = line.strip()
+              if not line or line.startswith("#"):
+                  continue
+              name = re.split(r"[<>=!~ @]", line, maxsplit=1)[0]
+              if name:
+                  dependency_names.add(normalize(name))
+
+          denied_tokens = ("AGPL", "AFFERO GENERAL PUBLIC LICENSE", "SSPL", "SERVER SIDE PUBLIC LICENSE")
+          records = json.loads(Path("/tmp/configreach-licenses.json").read_text(encoding="utf-8"))
+          audited = [record for record in records if normalize(str(record.get("Name", ""))) in dependency_names]
+          present = {normalize(str(record.get("Name", ""))) for record in audited}
+          missing = dependency_names - present
+          if missing:
+              raise SystemExit("License metadata missing for dependencies: " + ", ".join(sorted(missing)))
+
+          denied = []
+          for record in audited:
+              license_text = str(record.get("License", "")).upper()
+              if any(token in license_text for token in denied_tokens):
+                  denied.append(f"{record.get('Name')}=={record.get('Version')}: {record.get('License')}")
+          if denied:
+              raise SystemExit("Denied dependency licenses detected:\n" + "\n".join(sorted(denied)))
+          PY

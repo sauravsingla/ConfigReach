@@ -53,6 +53,18 @@ class Settings:
         return any(fnmatch.fnmatch(rel, pattern) for pattern in self.test_patterns)
 
 
+def _safe_repository_path(root: Path, configured: str) -> bool:
+    """Return whether a repository-controlled path remains under *root*."""
+    path = Path(configured)
+    if path.is_absolute():
+        return False
+    try:
+        (root / path).resolve().relative_to(root.resolve())
+    except (OSError, RuntimeError, ValueError):
+        return False
+    return True
+
+
 def load_settings(root: Path) -> Settings:
     settings = Settings()
     path = root / "configreach.toml"
@@ -74,9 +86,9 @@ def load_settings(root: Path) -> Settings:
             pass
     if isinstance(section.get("fail_on"), list):
         settings.fail_on = {str(x).lower() for x in section["fail_on"]}
-    if isinstance(section.get("baseline"), str):
+    if isinstance(section.get("baseline"), str) and _safe_repository_path(root, section["baseline"]):
         settings.baseline = section["baseline"]
-    if isinstance(section.get("trace_file"), str):
+    if isinstance(section.get("trace_file"), str) and _safe_repository_path(root, section["trace_file"]):
         settings.trace_file = section["trace_file"]
     if isinstance(section.get("cache"), bool):
         settings.cache = section["cache"]

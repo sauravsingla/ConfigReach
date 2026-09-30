@@ -64,7 +64,8 @@ For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@
 ## What the listing should highlight
 
 - Deterministic, CPU-only analysis
-- Zero runtime dependencies
+- Python 3.10–3.14 compatibility
+- Standard-library runtime on Python 3.11+; only the pinned `tomli` backport on Python 3.10
 - No LLM, API key, telemetry or hosted service required
 - Works directly inside pull-request CI
 - Supports environment variables, feature flags, configuration declarations, CLI options and multiple ecosystems

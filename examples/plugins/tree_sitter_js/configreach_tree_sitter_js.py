@@ -10,7 +10,7 @@ from configreach.models import ConfigKey, Location
 
 
 class TreeSitterJavaScriptAdapter:
-    """Optional parser-backed example adapter kept outside the zero-dependency core."""
+    """Optional parser-backed example adapter kept outside the minimal core."""
 
     name = "tree-sitter-js"
     api_version = 1

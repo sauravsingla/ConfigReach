@@ -11,9 +11,13 @@ import argparse
 import json
 import math
 import shutil
-import tomllib
 from pathlib import Path
 from typing import Any
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -135,7 +139,6 @@ def build(output_dir: Path) -> None:
         for row in rows:
             handle.write(json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n")
 
-    # Publish both compact metadata and the exact committed source evidence.
     write_json(output_dir / "metadata/accuracy.json", accuracy)
     write_json(output_dir / "metadata/ecosystem_summary.json", ecosystem_summary)
     write_json(
