@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
-import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pyarrow.parquet as pq
+from huggingface_hub import HfApi, hf_hub_download
 
 from run_confrca_benchmark import (
     DATASET_ID,
@@ -19,24 +20,12 @@ from run_confrca_benchmark import (
     _write_csv,
 )
 
-PUBLIC_REPO = "https://huggingface.co/datasets/iainzhang/confRCA.git"
 PUBLIC_FILES = {
     "config_version": "config_version.parquet",
     "confrca_bench": "confrca_bench.parquet",
 }
 EXPECTED_REGISTRY_ROWS = 2213
 EXPECTED_LABEL_ROWS = 2374
-
-
-def _run(command: list[str], *, cwd: Path | None = None) -> str:
-    completed = subprocess.run(
-        command,
-        cwd=cwd,
-        check=True,
-        text=True,
-        capture_output=True,
-    )
-    return completed.stdout.strip()
 
 
 def _sha256(path: Path) -> str:
@@ -47,40 +36,72 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _assert_real_parquet(path: Path) -> None:
-    if not path.exists():
-        raise FileNotFoundError(f"ConfRCA file missing after public clone: {path.name}")
-    if path.stat().st_size < 8:
-        raise RuntimeError(f"ConfRCA file is unexpectedly small: {path.name}")
-    with path.open("rb") as handle:
-        if handle.read(4) != b"PAR1":
-            raise RuntimeError(
-                f"{path.name} is not materialized Parquet data. Git LFS/Xet content "
-                "was not downloaded by the public clone."
-            )
+def _require_hf_token() -> str:
+    token = os.environ.get("HF_TOKEN", "").strip()
+    if not token:
+        raise RuntimeError(
+            "HF_TOKEN is required only while refreshing ConfRCA. CI obtains a short-lived "
+            "token through the repository's existing Hugging Face Trusted Publisher/OIDC "
+            "workflow; no reusable secret is stored."
+        )
+    return token
+
+
+def _download_file(
+    filename: str,
+    destination: Path,
+    *,
+    revision: str,
+    cache_dir: Path,
+    token: str,
+) -> str:
+    downloaded = Path(
+        hf_hub_download(
+            repo_id=DATASET_ID,
+            filename=filename,
+            repo_type="dataset",
+            revision=revision,
+            token=token,
+            cache_dir=str(cache_dir),
+            force_download=True,
+        )
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(downloaded, destination)
+    return _sha256(destination)
 
 
 def refresh_public_snapshot(data_dir: Path) -> dict:
     data_dir.mkdir(parents=True, exist_ok=True)
+    token = _require_hf_token()
 
-    with tempfile.TemporaryDirectory(prefix="configreach-confrca-public-") as tmp:
+    # Resolve the dataset once and pin both benchmark files to one immutable revision.
+    info = HfApi(token=token).dataset_info(DATASET_ID)
+    upstream_revision = str(info.sha or "").strip()
+    if not upstream_revision:
+        raise RuntimeError("Hugging Face did not return an immutable ConfRCA revision SHA")
+
+    with tempfile.TemporaryDirectory(prefix="configreach-confrca-") as tmp:
         tmpdir = Path(tmp)
-        checkout = tmpdir / "confRCA"
+        cache_dir = tmpdir / "hf-cache"
+        registry_parquet = tmpdir / PUBLIC_FILES["config_version"]
+        labels_parquet = tmpdir / PUBLIC_FILES["confrca_bench"]
 
-        # Hugging Face's normal REST/file endpoints currently reject anonymous requests
-        # from GitHub-hosted runners for this public dataset. Public Git transport is
-        # independent of those APIs and lets Git LFS/Xet materialize the repository files.
-        _run(["git", "lfs", "install", "--local"])
-        _run(["git", "clone", "--depth", "1", PUBLIC_REPO, str(checkout)])
-        upstream_revision = _run(["git", "rev-parse", "HEAD"], cwd=checkout)
+        registry_sha = _download_file(
+            PUBLIC_FILES["config_version"],
+            registry_parquet,
+            revision=upstream_revision,
+            cache_dir=cache_dir,
+            token=token,
+        )
+        labels_sha = _download_file(
+            PUBLIC_FILES["confrca_bench"],
+            labels_parquet,
+            revision=upstream_revision,
+            cache_dir=cache_dir,
+            token=token,
+        )
 
-        registry_parquet = checkout / PUBLIC_FILES["config_version"]
-        labels_parquet = checkout / PUBLIC_FILES["confrca_bench"]
-        _assert_real_parquet(registry_parquet)
-        _assert_real_parquet(labels_parquet)
-
-        registry_sha = _sha256(registry_parquet)
-        labels_sha = _sha256(labels_parquet)
         registry_rows = pq.read_table(
             registry_parquet, columns=list(REGISTRY_COLUMNS)
         ).to_pylist()
@@ -97,17 +118,17 @@ def refresh_public_snapshot(data_dir: Path) -> dict:
 
         if registry_count != EXPECTED_REGISTRY_ROWS:
             raise RuntimeError(
-                "ConfRCA configuration registry row count changed; review upstream before "
-                f"refreshing evidence: expected={EXPECTED_REGISTRY_ROWS}, observed={registry_count}"
+                "ConfRCA configuration registry changed; review upstream before refreshing: "
+                f"expected={EXPECTED_REGISTRY_ROWS}, observed={registry_count}"
             )
         if label_count != EXPECTED_LABEL_ROWS:
             raise RuntimeError(
-                "ConfRCA labelled benchmark row count changed; review upstream before "
-                f"refreshing evidence: expected={EXPECTED_LABEL_ROWS}, observed={label_count}"
+                "ConfRCA labelled benchmark changed; review upstream before refreshing: "
+                f"expected={EXPECTED_LABEL_ROWS}, observed={label_count}"
             )
 
         source = {
-            "schema_version": 3,
+            "schema_version": 4,
             "dataset": DATASET_ID,
             "dataset_page": DATASET_PAGE,
             "upstream_revision": upstream_revision,
@@ -118,12 +139,12 @@ def refresh_public_snapshot(data_dir: Path) -> dict:
                 "pairwise dependency-scope signal."
             ),
             "transport": {
-                "client": "git + git-lfs",
-                "source": PUBLIC_REPO,
-                "authentication": "none (public repository)",
-                "reason": (
-                    "Uses the dataset repository's public Git transport rather than live REST "
-                    "or Dataset Viewer endpoints, which can reject anonymous GitHub-runner traffic."
+                "client": "huggingface_hub",
+                "authentication": "ephemeral GitHub OIDC / Hugging Face Trusted Publisher token",
+                "long_lived_secret_required": False,
+                "note": (
+                    "The reduced snapshot is committed after refresh so ordinary reproduction "
+                    "and verification do not require Hugging Face credentials or network access."
                 ),
             },
             "files": {
