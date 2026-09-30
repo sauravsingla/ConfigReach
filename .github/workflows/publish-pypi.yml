@@ -87,7 +87,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install release toolchain
-        run: python -m pip install -e '.[dev]'
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pip check
 
       - name: Verify package and runtime versions
         id: version
@@ -158,6 +160,57 @@ jobs:
         with:
           packages-dir: release-bundle/dist/
           print-hash: true
+
+  verify-pypi:
+    name: verify PyPI / Python ${{ matrix.python-version }}
+    needs: [build, pypi]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the published package from PyPI
+        shell: bash
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          installed=false
+          for attempt in 1 2 3 4 5 6; do
+            if python -m pip install --no-cache-dir --index-url https://pypi.org/simple "configreach==${VERSION}"; then
+              installed=true
+              break
+            fi
+            sleep 10
+          done
+          test "$installed" = true
+          python -m pip check
+
+      - name: Verify published metadata and CLI
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          python - <<'PY'
+          import importlib.metadata as metadata
+          import os
+          import configreach
+
+          expected = os.environ["VERSION"]
+          assert configreach.__version__ == expected, (configreach.__version__, expected)
+          assert metadata.version("configreach") == expected
+          assert metadata.metadata("configreach").get("Requires-Python") == ">=3.8"
+          PY
+          configreach --version
+          configreach --help >/tmp/configreach-pypi-help.txt
+          test -s /tmp/configreach-pypi-help.txt
+          mkdir -p /tmp/configreach-pypi-smoke
+          printf 'import os\nMODE = os.getenv("MODE", "safe")\n' > /tmp/configreach-pypi-smoke/app.py
+          configreach scan /tmp/configreach-pypi-smoke --format json --output /tmp/configreach-pypi-report.json --no-cache
+          python -m json.tool /tmp/configreach-pypi-report.json >/dev/null
 
   ghcr:
     name: publish GHCR
@@ -239,7 +292,7 @@ jobs:
 
   github-release:
     name: publish GitHub Release
-    needs: [build, pypi, ghcr]
+    needs: [build, pypi, verify-pypi, ghcr]
     runs-on: ubuntu-latest
     permissions:
       contents: write
