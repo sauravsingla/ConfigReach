@@ -607,7 +607,9 @@ def scan(root: str | Path = ".", settings: Settings | None = None, *, use_cache:
 
     files: list[Path] = []
     for path in root_path.rglob("*"):
-        if not path.is_file():
+        # Never follow repository-controlled file symlinks. A link can resolve
+        # outside the scan root and otherwise expose arbitrary host files.
+        if path.is_symlink() or not path.is_file():
             continue
         rel = path.relative_to(root_path).as_posix()
         if settings.ignored(rel) or not _eligible(path):
