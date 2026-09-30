@@ -7,6 +7,21 @@ import tarfile
 from pathlib import Path, PurePosixPath
 
 
+def validate_git_revision_range(value: str) -> str:
+    """Reject Git revision arguments that can be reinterpreted as options."""
+    if not value or "\x00" in value:
+        raise ValueError("git revision range must be a non-empty revision expression")
+    if "..." in value:
+        parts = value.split("...", 1)
+    elif ".." in value:
+        parts = value.split("..", 1)
+    else:
+        parts = [value]
+    if any(not part or part.startswith("-") for part in parts):
+        raise ValueError(f"unsafe git revision range: {value!r}")
+    return value
+
+
 def _safe_tar_target(destination: Path, member_name: str) -> Path:
     """Resolve a tar member beneath *destination* or reject it.
 
