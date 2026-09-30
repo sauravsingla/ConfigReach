@@ -142,7 +142,7 @@
   "schema_version": 1,
   "tool": {
     "name": "ConfigReach",
-    "source_revision": "73ab7f3762aa945d1498183f0c2c9d157d9013ea",
-    "version": "0.9.2"
+    "source_revision": "09f181f67d6e0a6df119341bc522afd6e7ef3b2c",
+    "version": "0.9.3"
   }
 }
