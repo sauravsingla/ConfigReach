@@ -65,8 +65,12 @@ jobs:
           import importlib.metadata as metadata
           import configreach
           requires_python = metadata.metadata("configreach").get("Requires-Python")
+          distribution_version = metadata.version("configreach")
           assert requires_python == ">=3.10", requires_python
-          assert configreach.__version__ == "0.9.3", configreach.__version__
+          assert configreach.__version__ == distribution_version, (
+              configreach.__version__,
+              distribution_version,
+          )
           PY
           configreach --version
           configreach scan examples/basic --format json --output /tmp/configreach-wheel-report.json --no-cache
