@@ -15,10 +15,10 @@
 [![Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/validation.yml)
 [![GHCR](https://img.shields.io/badge/GHCR-configreach-blue.svg)](https://github.com/sauravsingla/ConfigReach/pkgs/container/configreach)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.8–3.14](https://img.shields.io/badge/Python-3.8%E2%80%933.14-blue.svg)](https://www.python.org/)
+[![Python 3.10–3.14](https://img.shields.io/badge/Python-3.10%E2%80%933.14-blue.svg)](https://www.python.org/)
 [![Runtime dependencies: minimal](https://img.shields.io/badge/runtime%20dependencies-minimal-brightgreen.svg)](pyproject.toml)
 
-ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry and no paid dependency**. Python 3.11+ uses only the standard library at runtime; Python 3.8–3.10 adds the pinned `tomli` backport for TOML parsing. Static analysis does not execute the target repository. Machine-readable results are deterministic for the same repository state and configuration.
+ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry and no paid dependency**. Python 3.11+ uses only the standard library at runtime; Python 3.10 adds the pinned `tomli` backport for TOML parsing. Static analysis does not execute the target repository. Machine-readable results are deterministic for the same repository state and configuration.
 
 ![ConfigReach terminal example](docs/demo.svg)
 
@@ -107,7 +107,7 @@ Different teams describe configuration-coverage gaps in different ways. ConfigRe
 
 ### PyPI CLI
 
-ConfigReach supports CPython **3.8 through 3.14**. Python 3.8 and 3.9 are upstream end-of-life, so maintained Python versions are recommended for security-sensitive environments.
+ConfigReach supports CPython **3.10 through 3.14**.
 
 ```bash
 python -m pip install --upgrade configreach
@@ -270,7 +270,7 @@ The normal `configreach scan .` remains the combined repository view. See [docs/
 
 ## Adapter API and optional parser-backed plugins
 
-The base package has no optional external parser dependencies. Python 3.8–3.10 additionally uses the pinned `tomli` TOML backport; Python 3.11+ uses the standard-library `tomllib`. External deterministic adapters can register through the `configreach.adapters` entry-point group. Adapter API v1 includes compatibility version, parser identity, determinism declaration and capability metadata.
+The base package has no optional external parser dependencies. Python 3.10 uses the pinned `tomli` TOML backport; Python 3.11+ uses the standard-library `tomllib`. External deterministic adapters can register through the `configreach.adapters` entry-point group. Adapter API v1 includes compatibility version, parser identity, determinism declaration and capability metadata.
 
 ```bash
 configreach adapters
@@ -409,7 +409,7 @@ The suite covers language/config discovery, deployment sources, validators, Pyda
 
 ## Design principles
 
-- CPU-only; standard-library runtime on Python 3.11+ and only the pinned `tomli` backport on Python 3.8–3.10.
+- CPU-only; standard-library runtime on Python 3.11+ and only the pinned `tomli` backport on Python 3.10.
 - No network, telemetry, model inference or paid API in the core.
 - Static scanning never executes target application code.
 - Runtime tracing is explicit opt-in.
