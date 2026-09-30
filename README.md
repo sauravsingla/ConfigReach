@@ -1,6 +1,6 @@
 # ConfigReach
 
-> **Your tests have 94% code coverage. But only 31% configuration coverage. ConfigReach tells you the difference.**
+> **High code coverage does not guarantee high configuration coverage. ConfigReach measures the gap.**
 
 **ConfigReach is a deterministic, CPU-only, offline configuration coverage analyzer that shows which runtime configuration inputs, values, branches and important combinations your tests actually exercise.** Think **Codecov for configuration space**.
 
@@ -24,21 +24,45 @@ ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry 
 
 ConfigReach publishes reproducible validation evidence instead of relying only on feature claims.
 
-### External-project validation
+### Frozen external holdout — 11 repositories, 9 ecosystems
 
-The current suite scans **10 pinned, recognizable open-source repositories** across Python, JavaScript, Go, Java/Spring and Terraform: Flask, Django, Pydantic, HTTPX, Express, Axios, Gin, Helm, Spring PetClinic and Terraform.
+The current frozen holdout scans **11 pinned public open-source repositories** selected before ConfigReach results were examined. The corpus is disjoint from the earlier 10-project validation baseline and spans Python, JavaScript/TypeScript, Go/Kubernetes, Java/Spring, .NET/C#, Rust, Ruby, PHP and Terraform.
 
-- **17,777** configuration inputs discovered
-- **639** inputs with detected test/runtime evidence
-- **3.6%** aggregate observed key coverage across the 10-project corpus
-- **1,640.022s** total scan wall time on the recorded GitHub-hosted runner
-- Targeted manual spot checks are maintained separately from the aggregate measurements and are not presented as exhaustive repository-wide error rates.
+- **11 / 11 repository jobs completed successfully**
+- **96,845** configuration inputs discovered
+- **5,539** inputs with detected test/runtime evidence
+- **5.72%** aggregate observed configuration coverage
+- **34,933.6s (~9.70 cumulative scanner-hours)** across independently executed jobs; this is the sum of per-repository scanner runtimes, not workflow wall-clock elapsed time
+- **0** repositories overlap the earlier validation baseline
+- All targets are pinned to immutable upstream commit SHAs
 
-These projects are external validation targets; their inclusion does not imply endorsement. The coverage figures are ConfigReach observations, not independently labelled ground truth. Exact upstream commit SHAs, runtimes, per-project counts and review evidence are published in [`validation/results/real-world.md`](validation/results/real-world.md) and [`validation/real_world_reviews.json`](validation/real_world_reviews.json).
+| Ecosystem | Projects | Configs | Covered | Observed coverage |
+|---|---:|---:|---:|---:|
+| Python | 2 | 47,346 | 1,277 | 2.70% |
+| JavaScript/TypeScript | 2 | 18,151 | 809 | 4.46% |
+| Go/Kubernetes | 1 | 5,107 | 242 | 4.74% |
+| Java/Spring | 1 | 4,464 | 673 | 15.08% |
+| .NET/C# | 1 | 16,780 | 2,199 | 13.10% |
+| Rust | 1 | 2,801 | 132 | 4.71% |
+| Ruby | 1 | 199 | 148 | 74.37% |
+| PHP | 1 | 1,707 | 59 | 3.46% |
+| Terraform | 1 | 290 | 0 | 0.00% |
 
-### Hand-labelled accuracy benchmark
+The 5.72% figure is **configuration evidence coverage, not precision, recall or F1**. It is the fraction of discovered configuration inputs for which ConfigReach linked test/runtime evidence. Precision/recall require independently labelled ground truth and are measured separately below.
 
-A separate committed ground-truth corpus measures precision, recall and F1 for five core analysis tasks. On the current **37 labelled benchmark decisions**, the deterministic hardening pass produces zero false positives and zero false negatives:
+Exact upstream SHAs, per-repository counts, runtimes, artifact IDs and SHA-256 artifact digests are published in [`validation/results/external-holdout-full.md`](validation/results/external-holdout-full.md) and [`validation/results/external-holdout-full.json`](validation/results/external-holdout-full.json). The successful full run is preserved in [GitHub Actions run 36588655396](https://github.com/sauravsingla/ConfigReach/actions/runs/36588655396).
+
+The earlier 10-project baseline remains published for historical comparison in [`validation/results/real-world.md`](validation/results/real-world.md): **17,777** configuration inputs, **639** inputs with detected evidence and **3.6%** aggregate observed key coverage.
+
+### External precision & recall evaluation
+
+External precision, recall and F1 will be reported only from **independently labelled cases sampled from the frozen external holdout**. Until that review is complete, ConfigReach makes **no external precision/recall/F1 claim** from the 96,845 discovered inputs or the 5.72% configuration-coverage figure.
+
+When external accuracy results are published, this section will report the reviewed sample size, TP, FP, FN, precision, recall, F1, repository/ecosystem coverage, sampling method and annotation protocol so the measurement can be interpreted and reproduced.
+
+### Small hand-labelled accuracy benchmark
+
+A separate small committed ground-truth corpus measures precision, recall and F1 for five core analysis tasks. On the current **37 labelled benchmark decisions**, the deterministic hardening pass produces zero false positives and zero false negatives:
 
 | Task | Precision | Recall | F1 | TP | FP | FN |
 |---|---:|---:|---:|---:|---:|---:|

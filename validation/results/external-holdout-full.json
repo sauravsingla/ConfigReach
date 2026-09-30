@@ -1,0 +1,375 @@
+{
+  "captured_at": "2026-09-29",
+  "ecosystem_summary": [
+    {
+      "configuration_coverage": 0.026972,
+      "configuration_inputs": 47346,
+      "covered_inputs": 1277,
+      "ecosystem": "Python",
+      "projects": 2,
+      "runtime_seconds": 22786.538726
+    },
+    {
+      "configuration_coverage": 0.044571,
+      "configuration_inputs": 18151,
+      "covered_inputs": 809,
+      "ecosystem": "JavaScript/TypeScript",
+      "projects": 2,
+      "runtime_seconds": 8834.174534
+    },
+    {
+      "configuration_coverage": 0.047386,
+      "configuration_inputs": 5107,
+      "covered_inputs": 242,
+      "ecosystem": "Go/Kubernetes",
+      "projects": 1,
+      "runtime_seconds": 589.126364
+    },
+    {
+      "configuration_coverage": 0.150762,
+      "configuration_inputs": 4464,
+      "covered_inputs": 673,
+      "ecosystem": "Java/Spring",
+      "projects": 1,
+      "runtime_seconds": 1098.859301
+    },
+    {
+      "configuration_coverage": 0.131049,
+      "configuration_inputs": 16780,
+      "covered_inputs": 2199,
+      "ecosystem": ".NET/C#",
+      "projects": 1,
+      "runtime_seconds": 758.537352
+    },
+    {
+      "configuration_coverage": 0.047126,
+      "configuration_inputs": 2801,
+      "covered_inputs": 132,
+      "ecosystem": "Rust",
+      "projects": 1,
+      "runtime_seconds": 556.33597
+    },
+    {
+      "configuration_coverage": 0.743719,
+      "configuration_inputs": 199,
+      "covered_inputs": 148,
+      "ecosystem": "Ruby",
+      "projects": 1,
+      "runtime_seconds": 26.565444
+    },
+    {
+      "configuration_coverage": 0.034564,
+      "configuration_inputs": 1707,
+      "covered_inputs": 59,
+      "ecosystem": "PHP",
+      "projects": 1,
+      "runtime_seconds": 283.088817
+    },
+    {
+      "configuration_coverage": 0.0,
+      "configuration_inputs": 290,
+      "covered_inputs": 0,
+      "ecosystem": "Terraform",
+      "projects": 1,
+      "runtime_seconds": 0.406242
+    }
+  ],
+  "environment": {
+    "machine": "x86_64",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "python": "3.12.14"
+  },
+  "execution": {
+    "all_jobs_succeeded": true,
+    "artifacts": [
+      {
+        "artifact_id": 11057504090,
+        "artifact_name": "configreach-holdout-apache-airflow",
+        "digest": "sha256:55de3d38e671337b8f626b91613182a647b35276a743788538b371ed4e838f90",
+        "repo": "apache/airflow"
+      },
+      {
+        "artifact_id": 11049936495,
+        "artifact_name": "configreach-holdout-prefecthq-prefect",
+        "digest": "sha256:d7c470a009022c515d2ea0b9cfbc5df72415114deac4422c83e22068e359c594",
+        "repo": "PrefectHQ/prefect"
+      },
+      {
+        "artifact_id": 11050858112,
+        "artifact_name": "configreach-holdout-vercel-nextjs",
+        "digest": "sha256:a58eb8a647267b54a7e6f931022f35a422f296e6672643fedb9ce6c66f977834",
+        "repo": "vercel/next.js"
+      },
+      {
+        "artifact_id": 11042528017,
+        "artifact_name": "configreach-holdout-vitejs-vite",
+        "digest": "sha256:08f69518e6f14835a41aafc454c8a43b8eb8de37a6b3cd2aae3d3f132f633aad",
+        "repo": "vitejs/vite"
+      },
+      {
+        "artifact_id": 11042943263,
+        "artifact_name": "configreach-holdout-argoproj-argo-cd",
+        "digest": "sha256:b4370cec09870ca8f312f175fcb27d2424ed23dfc4b433ce145a4408e2b85997",
+        "repo": "argoproj/argo-cd"
+      },
+      {
+        "artifact_id": 11043059779,
+        "artifact_name": "configreach-holdout-spring-projects-spring-boot",
+        "digest": "sha256:3d9fc0920e0cf773327844001575046d16f44e5b9aff8d609acc2a11a09991bb",
+        "repo": "spring-projects/spring-boot"
+      },
+      {
+        "artifact_id": 11042634904,
+        "artifact_name": "configreach-holdout-dotnet-aspnetcore",
+        "digest": "sha256:909e51addb17846b4b523dabc87e18d54245b26955dc75e2ad7cf0c30386d55b",
+        "repo": "dotnet/aspnetcore"
+      },
+      {
+        "artifact_id": 11043706108,
+        "artifact_name": "configreach-holdout-astral-sh-uv",
+        "digest": "sha256:4e2c23ce9f2b22b4b259323431f15b73e4b42b439eea0a75f8d3d9cd14033ace",
+        "repo": "astral-sh/uv"
+      },
+      {
+        "artifact_id": 11041954813,
+        "artifact_name": "configreach-holdout-rails-rails",
+        "digest": "sha256:9532db682496e5da4f431fa802028b621ad8701fa00222e2a7702421377fdec8",
+        "repo": "rails/rails"
+      },
+      {
+        "artifact_id": 11043630412,
+        "artifact_name": "configreach-holdout-laravel-framework",
+        "digest": "sha256:bd872df2452e5f61f5abc655e1a146af6b37664e5dafc2914aec27d8d78963af",
+        "repo": "laravel/framework"
+      },
+      {
+        "artifact_id": 11042144556,
+        "artifact_name": "configreach-holdout-terraform-aws-vpc",
+        "digest": "sha256:49ed133597ac2376626f579f0b217472071a5ec3bb1defb8ba2a4ccbc1da18c4",
+        "repo": "terraform-aws-modules/terraform-aws-vpc"
+      }
+    ],
+    "mode": "github-actions-parallel-per-repository",
+    "runtime_semantics": "summary.runtime_seconds is cumulative scanner runtime across repositories; jobs executed in parallel, so it is not workflow elapsed wall-clock time.",
+    "source_revision": "0bb468da29355a86f05b0870a1ac61bf8a5696b8",
+    "workflow_run_id": 36588655396,
+    "workflow_run_url": "https://github.com/sauravsingla/ConfigReach/actions/runs/36588655396"
+  },
+  "failures": [],
+  "methodology": {
+    "baseline_disjoint": true,
+    "dependencies_installed": false,
+    "holdout_frozen_before_scan": true,
+    "manual_review_is_exhaustive": false,
+    "pinned_commits": true,
+    "static_only": true,
+    "target_code_executed": false
+  },
+  "projects": [
+    {
+      "commit": "647add72afe204e0411d97c2fa121f1596012382",
+      "configuration_coverage": 0.048757,
+      "configuration_inputs": 19669,
+      "covered_inputs": 959,
+      "ecosystem": "Python",
+      "files_scanned": 10694,
+      "repo": "apache/airflow",
+      "runtime_seconds": 16028.985002,
+      "source_url": "https://github.com/apache/airflow",
+      "tests_scanned": 4557,
+      "uncovered_inputs": 18710,
+      "warnings": []
+    },
+    {
+      "commit": "4f52bc6d0dd8186ca63bdd0552c5e21f05b483b2",
+      "configuration_coverage": 0.01149,
+      "configuration_inputs": 27677,
+      "covered_inputs": 318,
+      "ecosystem": "Python",
+      "files_scanned": 3809,
+      "repo": "PrefectHQ/prefect",
+      "runtime_seconds": 6757.553724,
+      "source_url": "https://github.com/PrefectHQ/prefect",
+      "tests_scanned": 935,
+      "uncovered_inputs": 27359,
+      "warnings": [
+        "Skipped large file: src/integrations/prefect-github/prefect_github/schemas/graphql_schema.json"
+      ]
+    },
+    {
+      "commit": "b829c6189bc3af485cb92f0c3f3d09bf81a8e6fe",
+      "configuration_coverage": 0.041051,
+      "configuration_inputs": 17880,
+      "covered_inputs": 734,
+      "ecosystem": "JavaScript/TypeScript",
+      "files_scanned": 28242,
+      "repo": "vercel/next.js",
+      "runtime_seconds": 8817.496545,
+      "source_url": "https://github.com/vercel/next.js",
+      "tests_scanned": 19893,
+      "uncovered_inputs": 17146,
+      "warnings": [
+        "Skipped large file: packages/next/src/compiled/webpack/bundle5.js",
+        "Skipped large file: turbopack/crates/turbopack-ecmascript/tests/benches/packages-bundle.js"
+      ]
+    },
+    {
+      "commit": "744269e5b2a155074910ddd275aecf2b83938496",
+      "configuration_coverage": 0.276753,
+      "configuration_inputs": 271,
+      "covered_inputs": 75,
+      "ecosystem": "JavaScript/TypeScript",
+      "files_scanned": 2025,
+      "repo": "vitejs/vite",
+      "runtime_seconds": 16.677989,
+      "source_url": "https://github.com/vitejs/vite",
+      "tests_scanned": 486,
+      "uncovered_inputs": 196,
+      "warnings": []
+    },
+    {
+      "commit": "c43b3318b42187e151392c1a2c38ac2ca4fbe28f",
+      "configuration_coverage": 0.047386,
+      "configuration_inputs": 5107,
+      "covered_inputs": 242,
+      "ecosystem": "Go/Kubernetes",
+      "files_scanned": 4221,
+      "repo": "argoproj/argo-cd",
+      "runtime_seconds": 589.126364,
+      "source_url": "https://github.com/argoproj/argo-cd",
+      "tests_scanned": 732,
+      "uncovered_inputs": 4865,
+      "warnings": [
+        "Skipped large file: docs/assets/lib/mermaid-11.17.2.min.js",
+        "Skipped large file: manifests/core-install-with-hydrator.yaml",
+        "Skipped large file: manifests/core-install.yaml",
+        "Skipped large file: manifests/ha/install-with-hydrator.yaml",
+        "Skipped large file: manifests/ha/install.yaml",
+        "Skipped large file: manifests/install-with-hydrator.yaml",
+        "Skipped large file: manifests/install.yaml"
+      ]
+    },
+    {
+      "commit": "ab1843bbf6d855ca066ea6b9ccf7e64b83139469",
+      "configuration_coverage": 0.150762,
+      "configuration_inputs": 4464,
+      "covered_inputs": 673,
+      "ecosystem": "Java/Spring",
+      "files_scanned": 9704,
+      "repo": "spring-projects/spring-boot",
+      "runtime_seconds": 1098.859301,
+      "source_url": "https://github.com/spring-projects/spring-boot",
+      "tests_scanned": 3956,
+      "uncovered_inputs": 3791,
+      "warnings": []
+    },
+    {
+      "commit": "bf676af7baa13fa4d06be384b4285d5406161219",
+      "configuration_coverage": 0.131049,
+      "configuration_inputs": 16780,
+      "covered_inputs": 2199,
+      "ecosystem": ".NET/C#",
+      "files_scanned": 12510,
+      "repo": "dotnet/aspnetcore",
+      "runtime_seconds": 758.537352,
+      "source_url": "https://github.com/dotnet/aspnetcore",
+      "tests_scanned": 4247,
+      "uncovered_inputs": 14581,
+      "warnings": []
+    },
+    {
+      "commit": "f93fee64f612c1dc66f855bd22ecaa891ea00585",
+      "configuration_coverage": 0.047126,
+      "configuration_inputs": 2801,
+      "covered_inputs": 132,
+      "ecosystem": "Rust",
+      "files_scanned": 1273,
+      "repo": "astral-sh/uv",
+      "runtime_seconds": 556.33597,
+      "source_url": "https://github.com/astral-sh/uv",
+      "tests_scanned": 438,
+      "uncovered_inputs": 2669,
+      "warnings": [
+        "Skipped large file: crates/uv-python/download-metadata.json"
+      ]
+    },
+    {
+      "commit": "7e1cb3bfa5c8dd4514eda14373ef4048cfd38eb9",
+      "configuration_coverage": 0.743719,
+      "configuration_inputs": 199,
+      "covered_inputs": 148,
+      "ecosystem": "Ruby",
+      "files_scanned": 3760,
+      "repo": "rails/rails",
+      "runtime_seconds": 26.565444,
+      "source_url": "https://github.com/rails/rails",
+      "tests_scanned": 2110,
+      "uncovered_inputs": 51,
+      "warnings": []
+    },
+    {
+      "commit": "2406fbfcc403c6f86268ee307713a1a14a7ae969",
+      "configuration_coverage": 0.034564,
+      "configuration_inputs": 1707,
+      "covered_inputs": 59,
+      "ecosystem": "PHP",
+      "files_scanned": 3229,
+      "repo": "laravel/framework",
+      "runtime_seconds": 283.088817,
+      "source_url": "https://github.com/laravel/framework",
+      "tests_scanned": 1343,
+      "uncovered_inputs": 1648,
+      "warnings": []
+    },
+    {
+      "commit": "b3abd6df2ecf052451a361ed55b8f06f8742a795",
+      "configuration_coverage": 0.0,
+      "configuration_inputs": 290,
+      "covered_inputs": 0,
+      "ecosystem": "Terraform",
+      "files_scanned": 84,
+      "repo": "terraform-aws-modules/terraform-aws-vpc",
+      "runtime_seconds": 0.406242,
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-vpc",
+      "tests_scanned": 0,
+      "uncovered_inputs": 290,
+      "warnings": []
+    }
+  ],
+  "reproduction": "python validation/run_external_holdout.py --manifest validation/external_holdout_projects.json --baseline-manifest validation/real_world_projects.json --profile full --json validation/results/external-holdout-full.json --markdown validation/results/external-holdout-full.md --reviews validation/external_holdout_reviews.json",
+  "schema_version": 1,
+  "selection": {
+    "baseline_manifest": "validation/real_world_projects.json",
+    "baseline_overlap_count": 0,
+    "profile": "full",
+    "projects_requested": 11,
+    "requested_repositories": []
+  },
+  "suite": {
+    "id": "external-holdout-v1",
+    "profiles": {
+      "full": "All frozen holdout projects for scheduled and manual validation.",
+      "smoke": "Fast end-to-end sentinel for pull requests and pushes."
+    },
+    "selection_frozen_before_scan": true,
+    "selection_policy": "Predetermined cross-ecosystem holdout selected before ConfigReach results were examined. Projects must not overlap validation/real_world_projects.json, are pinned to immutable full commit SHAs, and are retained regardless of observed ConfigReach coverage.",
+    "source": "Public GitHub repositories",
+    "title": "ConfigReach external holdout validation"
+  },
+  "summary": {
+    "configuration_coverage": 0.057194,
+    "configuration_inputs": 96845,
+    "covered_inputs": 5539,
+    "projects_requested": 11,
+    "projects_scanned": 11,
+    "projects_with_manual_review": 0,
+    "reviewed_false_negatives": 0,
+    "reviewed_false_positives": 0,
+    "runtime_seconds": 34933.63275
+  },
+  "tool": {
+    "name": "ConfigReach",
+    "source_revision": "0bb468da29355a86f05b0870a1ac61bf8a5696b8",
+    "version": "0.9.2"
+  }
+}
