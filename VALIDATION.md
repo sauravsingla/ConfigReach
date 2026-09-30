@@ -1,79 +1,104 @@
 # ConfigReach validation and measured accuracy
 
-ConfigReach publishes two deliberately separate forms of evidence:
+ConfigReach publishes deliberately separate forms of evidence so repository-level configuration coverage is not confused with accuracy.
 
-1. **External-project validation**: static scans of pinned commits from recognizable open-source repositories, recording configuration inputs discovered, detected test evidence, configuration coverage, runtime and targeted manual false-positive/false-negative reviews.
-2. **Hand-labelled accuracy benchmark**: a committed ground-truth corpus scored for precision, recall and F1 across environment-variable discovery, feature flags, configuration declarations, test evidence and branch inference.
+1. **Frozen external holdout:** static scans of pinned public repositories selected before results were examined. This measures discovered configuration inputs, linked test/runtime evidence, configuration coverage and runtime.
+2. **External precision/recall evaluation:** reserved for independently labelled cases sampled from the frozen external holdout. No external precision/recall/F1 claim is made until that review is complete.
+3. **Small hand-labelled accuracy benchmark:** a committed ground-truth corpus scored for precision, recall and F1 across environment-variable discovery, feature flags, configuration declarations, test evidence and branch inference.
 
-These are not the same thing. Configuration coverage observed in an external repository is not ground truth. Precision/recall claims come only from the hand-labelled corpus.
+These are different measurements. Configuration coverage observed in an external repository is not labelled ground truth.
 
-## Current measured accuracy
+## Frozen external holdout
 
-The committed benchmark currently reports:
+The current frozen holdout contains **11 public repositories across 9 ecosystems**. Selection was frozen before ConfigReach results were examined, every target is pinned to an immutable full commit SHA, and the corpus has zero repository overlap with the earlier 10-project baseline.
 
-| Task | Precision | Recall | F1 |
-|---|---:|---:|---:|
-| Environment-variable discovery | 100.0% | 72.7% | 84.2% |
-| Feature flags | 50.0% | 100.0% | 66.7% |
-| Configuration declarations | 66.7% | 90.9% | 76.9% |
-| Test evidence | 100.0% | 100.0% | 100.0% |
-| Branch inference | 53.8% | 100.0% | 70.0% |
+Published aggregate results:
 
-Aggregate metrics on the committed label set:
+- **11 / 11** repository jobs completed successfully
+- **96,845** configuration inputs discovered
+- **5,539** inputs with detected test/runtime evidence
+- **5.72%** aggregate observed configuration coverage
+- **34,933.6 seconds (~9.70 cumulative scanner-hours)** summed across independently executed repository jobs
+- **0** repository overlap with the historical baseline
 
-- **Micro precision:** 71.7%
-- **Micro recall:** 89.2%
-- **Micro F1:** 79.5%
-- **Macro F1:** 79.6%
+The repositories are:
 
-See [`validation/results/accuracy.md`](validation/results/accuracy.md) for the generated table, exact false positives/false negatives and label policy, and [`validation/results/accuracy.json`](validation/results/accuracy.json) for machine-readable evidence.
+- `apache/airflow` — Python
+- `PrefectHQ/prefect` — Python
+- `vercel/next.js` — JavaScript/TypeScript
+- `vitejs/vite` — JavaScript/TypeScript
+- `argoproj/argo-cd` — Go/Kubernetes
+- `spring-projects/spring-boot` — Java/Spring
+- `dotnet/aspnetcore` — .NET/C#
+- `astral-sh/uv` — Rust
+- `rails/rails` — Ruby
+- `laravel/framework` — PHP
+- `terraform-aws-modules/terraform-aws-vpc` — Terraform
 
-### What the benchmark currently exposes
+The exact immutable SHAs are committed in [`validation/external_holdout_projects.json`](validation/external_holdout_projects.json). Full per-repository results, runtimes and artifact provenance are published in [`validation/results/external-holdout-full.md`](validation/results/external-holdout-full.md) and [`validation/results/external-holdout-full.json`](validation/results/external-holdout-full.json).
 
-- Environment-variable discovery misses some statically recoverable indirection, including Python key construction, JavaScript `process.env` destructuring and Go variable-key lookups.
-- The feature-flag heuristic can over-classify unrelated methods named `variation`.
-- Generic JSON/TOML declaration discovery can treat package/project metadata as runtime configuration.
-- Boolean finite domains can currently be over-counted as branch states even when no decision branch exists.
-- The committed test-evidence cases are all detected, but that task has a small labelled sample and should not be interpreted as universal 100% accuracy.
+Target repositories are statically scanned. ConfigReach does not execute target application code and does not install target dependencies during this validation.
 
-Publishing these errors is intentional: the purpose of this benchmark is to make limitations visible and reproducible rather than imply perfect analysis.
+### Claim boundary
 
-## Real-world external-project suite
+The **5.72%** figure is configuration evidence coverage: the fraction of discovered configuration inputs for which ConfigReach linked test/runtime evidence. It is **not** scanner accuracy, precision, recall or F1.
 
-The suite covers **10 pinned open-source repositories** across Python, JavaScript, Go, Java/Spring and Terraform:
+## External precision & recall evaluation
 
-- `pallets/flask`
-- `django/django`
-- `pydantic/pydantic`
-- `encode/httpx`
-- `expressjs/express`
-- `axios/axios`
-- `gin-gonic/gin`
-- `helm/helm`
-- `spring-projects/spring-petclinic`
-- `hashicorp/terraform`
+External precision, recall and F1 will be reported only from independently labelled cases sampled from the frozen holdout. Until that review is complete, ConfigReach makes **no external precision/recall/F1 claim** from the 96,845 discovered inputs or the 5.72% configuration-coverage figure.
 
-The published scan observed **18,016 configuration inputs**, **639 inputs with detected test/runtime evidence**, **3.5% aggregate key coverage**, and **1,811.463 seconds total scan wall time** across the 10 pinned projects. These are ConfigReach observations, not ground-truth accuracy measurements.
+When published, the external accuracy report should include at minimum:
 
-The exact upstream commit SHAs are committed in [`validation/real_world_projects.json`](validation/real_world_projects.json). ConfigReach does not execute those projects or install their dependencies during this validation; it performs static analysis only.
+- reviewed sample size,
+- true positives, false positives and false negatives,
+- precision, recall and F1,
+- repositories and ecosystems represented,
+- sampling procedure,
+- annotation protocol,
+- reviewer/consensus procedure where applicable,
+- frozen source revisions used for evaluation.
 
-The per-project table is published at [`validation/results/real-world.md`](validation/results/real-world.md), with the original machine-readable scan output at [`validation/results/real-world.json`](validation/results/real-world.json).
+## Small hand-labelled accuracy benchmark
 
-### Manual real-world review
+A separate committed ground-truth corpus measures five core analysis tasks. The current generated result reports zero false positives and zero false negatives on the committed benchmark cases:
 
-Targeted spot checks currently cover **4 projects**, with **4 reviewed false-positive examples** and **3 reviewed false-negative examples**. The human-readable report is [`validation/results/manual-review.md`](validation/results/manual-review.md), and the machine-readable summary is [`validation/results/manual-review.json`](validation/results/manual-review.json). The review source of truth is [`validation/real_world_reviews.json`](validation/real_world_reviews.json).
+| Task | Precision | Recall | F1 | TP | FP | FN |
+|---|---:|---:|---:|---:|---:|---:|
+| Environment-variable discovery | 100.0% | 100.0% | 100.0% | 11 | 0 | 0 |
+| Feature flags | 100.0% | 100.0% | 100.0% | 2 | 0 | 0 |
+| Configuration declarations | 100.0% | 100.0% | 100.0% | 11 | 0 | 0 |
+| Test evidence | 100.0% | 100.0% | 100.0% | 6 | 0 | 0 |
+| Branch inference | 100.0% | 100.0% | 100.0% | 7 | 0 | 0 |
 
-Examples include:
+Aggregate metrics on this committed corpus:
 
-- **Django false negative:** `DJANGO_SETTINGS_MODULE` is read through a constant (`ENVIRONMENT_VARIABLE`) passed to `os.environ.get`, which the current literal-key Python discovery path does not resolve.
-- **Terraform false negatives:** `TF_TEMP_LOG_PATH` and `TF_IN_AUTOMATION` are read through Go constants passed to `os.Getenv`; the current Go adapter does not perform constant propagation.
-- **Express / Axios false positives:** `package.json` `name` and `version` are project metadata, but generic JSON flattening currently records them as configuration declarations.
+- **Micro precision:** 100.0%
+- **Micro recall:** 100.0%
+- **Micro F1:** 100.0%
+- **Macro F1:** 100.0%
+- **True positives:** 37
+- **False positives:** 0
+- **False negatives:** 0
 
-These annotations are **targeted reviewed examples, not exhaustive repository-wide FP/FN rates**. The hand-labelled corpus is the source for precision/recall metrics.
+See [`validation/results/accuracy.md`](validation/results/accuracy.md) and [`validation/results/accuracy.json`](validation/results/accuracy.json) for the exact generated evidence and label policy.
+
+This benchmark is intentionally **small, transparent and corpus-specific**. It includes deliberately difficult positive and negative examples, but it is not claimed to estimate accuracy across all repositories, languages or configuration frameworks.
+
+## Historical 10-project baseline
+
+The earlier real-world suite remains published for historical comparison. Its current regenerated result contains:
+
+- **10** pinned repositories
+- **17,777** configuration inputs
+- **639** inputs with detected test/runtime evidence
+- **3.6%** aggregate observed key coverage
+- **1,381.657 seconds** recorded total scan time
+
+See [`validation/results/real-world.md`](validation/results/real-world.md) and [`validation/results/real-world.json`](validation/results/real-world.json). Do not combine this historical baseline with the frozen external holdout when reporting one aggregate result.
 
 ## Reproduce
 
-Measured accuracy:
+Hand-labelled accuracy:
 
 ```bash
 python validation/accuracy/run_accuracy.py \
@@ -82,7 +107,19 @@ python validation/accuracy/run_accuracy.py \
   --markdown validation/results/accuracy.md
 ```
 
-Real-world suite (network access required to fetch pinned GitHub commits):
+Frozen external holdout (network access required; the full corpus is computationally expensive):
+
+```bash
+python validation/run_external_holdout.py \
+  --manifest validation/external_holdout_projects.json \
+  --baseline-manifest validation/real_world_projects.json \
+  --reviews validation/external_holdout_reviews.json \
+  --profile full \
+  --json validation/results/external-holdout-full.json \
+  --markdown validation/results/external-holdout-full.md
+```
+
+Historical baseline:
 
 ```bash
 python validation/run_real_world.py \
@@ -92,12 +129,12 @@ python validation/run_real_world.py \
   --markdown validation/results/real-world.md
 ```
 
-The GitHub Actions workflow [`validation.yml`](.github/workflows/validation.yml) runs both suites, uploads the evidence as an artifact and commits generated Markdown/JSON results back to `main` when they change. Its publication step rebases generated evidence onto the latest `main` before pushing, so unrelated documentation changes cannot make a long validation run stale.
+The dedicated external-holdout workflow validates the frozen manifest, checks baseline disjointness and runs smoke/full profiles. The Hugging Face publishing workflow separately verifies that the public Space metrics stay synchronized with the committed validation JSON before uploading.
 
 ## Claim boundaries
 
-- The accuracy corpus is intentionally small, transparent and adversarial; it does **not** estimate performance on every language/framework.
-- External-project coverage figures are ConfigReach observations, not independently labelled ground truth.
-- Manual external-project reviews are spot checks, not statistical error-rate estimates.
-- Runtime is wall-clock time on the recorded runner and is not hardware-independent.
-- Upstream projects are used as external validation targets; their inclusion does not imply endorsement of ConfigReach by those projects.
+- External repository coverage is observational ConfigReach output, not independently labelled ground truth.
+- External precision/recall/F1 is not claimed until an independently labelled holdout sample is completed.
+- The small hand-labelled benchmark reports exactly the committed cases and does not imply universal 100% accuracy.
+- Runtime measurements depend on repository size, scanner version and runner hardware; cumulative per-repository runtime is not parallel workflow wall-clock elapsed time.
+- Upstream projects are external validation targets; their inclusion does not imply endorsement of ConfigReach by those projects.
