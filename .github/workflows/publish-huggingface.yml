@@ -55,7 +55,8 @@ jobs:
           selection = holdout['selection']
           execution = holdout['execution']
           ecosystems = holdout['ecosystem_summary']
-          version = project['project']['version']
+          source_version = project['project']['version']
+          validation_version = holdout['tool']['version']
 
           total_inputs = sum(item['configuration_inputs'] for item in projects)
           covered_inputs = sum(item['covered_inputs'] for item in projects)
@@ -71,17 +72,17 @@ jobs:
               raise SystemExit('external holdout overlaps the historical baseline')
           if not execution['all_jobs_succeeded']:
               raise SystemExit('external holdout contains a failed repository job')
-          if holdout['tool']['version'] != version:
-              raise SystemExit('external holdout tool version does not match pyproject version')
-          if accuracy['tool']['version'] != version:
-              raise SystemExit('accuracy tool version does not match pyproject version')
+          if not validation_version:
+              raise SystemExit('external holdout tool version is missing')
+          if accuracy['tool']['version'] != validation_version:
+              raise SystemExit('accuracy tool version does not match external holdout tool version')
 
           aggregate = accuracy['aggregate']
           if aggregate['true_positives'] <= 0:
               raise SystemExit('accuracy corpus has no true-positive labels')
 
           expected = {
-              'version': f'v{version}',
+              'source_version': f'v{source_version}',
               'inputs': f'{total_inputs:,}',
               'covered': f'{covered_inputs:,}',
               'coverage': f'{coverage_pct:.2f}%',
@@ -100,8 +101,19 @@ jobs:
               if missing:
                   raise SystemExit(f'{rel} is stale: missing ' + ', '.join(missing))
 
+          space_readme = (root / 'huggingface-space/README.md').read_text(encoding='utf-8')
+          validation_marker = f'ConfigReach v{validation_version}'
+          if validation_marker not in space_readme:
+              raise SystemExit(
+                  'huggingface-space/README.md must identify the frozen validation scanner version: '
+                  + validation_marker
+              )
+
           print('Hugging Face public metrics are synchronized with committed evidence:')
-          print(json.dumps(expected, sort_keys=True))
+          print(json.dumps({
+              **expected,
+              'validation_version': f'v{validation_version}',
+          }, sort_keys=True))
           PY
 
       - name: Install Hugging Face CLI
