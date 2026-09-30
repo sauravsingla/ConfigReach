@@ -1,6 +1,6 @@
 # ConfigReach
 
-> **Your tests have 94% code coverage. But only 31% configuration coverage. ConfigReach tells you the difference.**
+> **High code coverage does not guarantee high configuration coverage. ConfigReach measures the gap.**
 
 **ConfigReach is a deterministic, CPU-only, offline configuration coverage analyzer that shows which runtime configuration inputs, values, branches and important combinations your tests actually exercise.** Think **Codecov for configuration space**.
 
@@ -32,7 +32,7 @@ The current frozen holdout scans **11 pinned public open-source repositories** s
 - **96,845** configuration inputs discovered
 - **5,539** inputs with detected test/runtime evidence
 - **5.72%** aggregate observed configuration coverage
-- **34,933.633s** cumulative scanner runtime across independently executed jobs
+- **34,933.6s (~9.70 cumulative scanner-hours)** across independently executed jobs; this is the sum of per-repository scanner runtimes, not workflow wall-clock elapsed time
 - **0** repositories overlap the earlier validation baseline
 - All targets are pinned to immutable upstream commit SHAs
 
@@ -54,9 +54,15 @@ Exact upstream SHAs, per-repository counts, runtimes, artifact IDs and SHA-256 a
 
 The earlier 10-project baseline remains published for historical comparison in [`validation/results/real-world.md`](validation/results/real-world.md): **17,777** configuration inputs, **639** inputs with detected evidence and **3.6%** aggregate observed key coverage.
 
-### Hand-labelled accuracy benchmark
+### External precision & recall evaluation
 
-A separate committed ground-truth corpus measures precision, recall and F1 for five core analysis tasks. On the current **37 labelled benchmark decisions**, the deterministic hardening pass produces zero false positives and zero false negatives:
+External precision, recall and F1 will be reported only from **independently labelled cases sampled from the frozen external holdout**. Until that review is complete, ConfigReach makes **no external precision/recall/F1 claim** from the 96,845 discovered inputs or the 5.72% configuration-coverage figure.
+
+When external accuracy results are published, this section will report the reviewed sample size, TP, FP, FN, precision, recall, F1, repository/ecosystem coverage, sampling method and annotation protocol so the measurement can be interpreted and reproduced.
+
+### Small hand-labelled accuracy benchmark
+
+A separate small committed ground-truth corpus measures precision, recall and F1 for five core analysis tasks. On the current **37 labelled benchmark decisions**, the deterministic hardening pass produces zero false positives and zero false negatives:
 
 | Task | Precision | Recall | F1 | TP | FP | FN |
 |---|---:|---:|---:|---:|---:|---:|
@@ -110,8 +116,8 @@ configreach coverage .
 The image is public, multi-architecture (`linux/amd64` and `linux/arm64`), and published with SBOM/provenance:
 
 ```bash
-docker pull ghcr.io/sauravsingla/configreach:latest
-docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/configreach:latest scan .
+docker pull ghcr.io/sauravsingla/ConfigReach:latest
+docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/ConfigReach:latest scan .
 ```
 
 ### GitHub Action
