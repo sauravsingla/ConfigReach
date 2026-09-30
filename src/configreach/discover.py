@@ -622,6 +622,12 @@ def scan(root: str | Path = ".", settings: Settings | None = None, *, use_cache:
 
     files: list[Path] = []
     for path in root_path.rglob("*"):
+        try:
+            if path.is_symlink():
+                continue
+            path.resolve().relative_to(root_path)
+        except (OSError, RuntimeError, ValueError):
+            continue
         if not path.is_file():
             continue
         rel = path.relative_to(root_path).as_posix()
