@@ -19,9 +19,12 @@ tags:
   - devops
   - ci-cd
   - configuration
+  - configuration-testing
   - configuration-coverage
   - static-analysis
   - github-actions
+  - benchmark
+  - reproducibility
   - cpu
   - environment-variables
   - feature-flags
@@ -32,6 +35,29 @@ tags:
 **Codecov for configuration space.**
 
 ConfigReach is a deterministic, CPU-only configuration coverage analyzer for software repositories. It shows which environment variables, feature flags, CLI options, configuration values, branches, and configuration combinations your tests actually exercise.
+
+**Project hub:** [ConfigReach — Configuration Coverage collection](https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage)
+
+## Try ConfigReach on your repository
+
+Run it locally in under a minute:
+
+```bash
+python -m pip install --upgrade configreach
+configreach scan .
+configreach coverage .
+```
+
+Or add it to GitHub Actions:
+
+```yaml
+- uses: sauravsingla/ConfigReach@v0
+  with:
+    path: .
+    format: markdown
+```
+
+The Hugging Face Space is the public project/demo page. Repository scanning runs locally, in CI, or from the public container; ConfigReach does not require a GPU, LLM, API key, hosted service, telemetry, or paid dependency.
 
 ## Current source version
 
@@ -74,6 +100,7 @@ This is deliberately a **small corpus-specific measurement, not a claim of unive
 
 ## Project links
 
+- [ConfigReach Hugging Face collection](https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage)
 - [Hugging Face validation dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
 - [GitHub repository](https://github.com/sauravsingla/ConfigReach)
 - [PyPI package](https://pypi.org/project/configreach/)
