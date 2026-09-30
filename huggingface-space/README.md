@@ -27,36 +27,54 @@ tags:
 
 ConfigReach is a deterministic, CPU-only configuration coverage analyzer for software repositories. It shows which environment variables, feature flags, CLI options, configuration values, branches, and configuration combinations your tests actually exercise.
 
-## Latest release
+## Current source version
 
-**ConfigReach v0.9.1** is published on PyPI.
+**ConfigReach v0.9.2** is the current repository version.
 
 ```bash
 pip install --upgrade configreach
 ```
 
-## Published validation
+## Published external validation
 
-The current reproducible validation suite scans **10 pinned recognizable open-source projects** and reports:
+The current frozen external holdout scans **11 pinned public open-source repositories across 9 ecosystems**. The repositories were selected before ConfigReach results were examined and are disjoint from the earlier 10-project baseline.
 
-- **18,016** configuration inputs discovered
-- **639** inputs with detected test/runtime evidence
-- **3.5%** aggregate observed key coverage across the external-project corpus
-- **71.7%** micro precision
-- **89.2%** micro recall
-- **79.5%** micro F1
-- **79.6%** macro F1
+- **11 / 11** repository jobs completed successfully
+- **96,845** configuration inputs discovered
+- **5,539** inputs with detected test/runtime evidence
+- **5.72%** aggregate observed configuration coverage
+- **34,933.6s (~9.70 cumulative scanner-hours)** across independently executed repository jobs
+- **0** repository overlap with the earlier validation baseline
 
-The repository also publishes reviewed false-positive/false-negative examples and the exact hand-labelled accuracy corpus. External-project coverage is observational; precision/recall claims come from the labelled benchmark.
+The 5.72% figure is **configuration evidence coverage, not precision, recall or F1**. It is the fraction of discovered configuration inputs for which ConfigReach linked test/runtime evidence.
+
+## Accuracy evidence
+
+### External precision & recall
+
+External precision, recall and F1 will be published only after independently labelled cases from the frozen external holdout are reviewed. Until then, ConfigReach makes **no external precision/recall/F1 claim** from the 96,845-input holdout.
+
+### Small hand-labelled benchmark
+
+A separate committed benchmark covers five core analysis tasks and currently reports:
+
+- **100.0% micro precision**
+- **100.0% micro recall**
+- **100.0% micro F1**
+- **100.0% macro F1**
+- **37 true positives, 0 false positives, 0 false negatives**
+
+This is deliberately a **small corpus-specific measurement, not a claim of universal 100% accuracy**.
 
 ## Project links
 
 - [GitHub repository](https://github.com/sauravsingla/ConfigReach)
 - [PyPI package](https://pypi.org/project/configreach/)
-- [ConfigReach v0.9.1 release](https://github.com/sauravsingla/ConfigReach/releases/tag/v0.9.1)
 - [Validation methodology](https://github.com/sauravsingla/ConfigReach/blob/main/VALIDATION.md)
-- [Real-world results](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/real-world.md)
-- [Measured accuracy](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/accuracy.md)
+- [Full frozen external holdout](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/external-holdout-full.md)
+- [Machine-readable external holdout](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/external-holdout-full.json)
+- [Measured hand-labelled accuracy](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/accuracy.md)
+- [Historical 10-project baseline](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/real-world.md)
 - [GitHub Pages site](https://sauravsingla.github.io/ConfigReach/)
 
 This Space is published automatically from GitHub using Hugging Face Trusted Publishers and GitHub Actions OIDC. No long-lived Hugging Face token is stored in GitHub.
