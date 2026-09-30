@@ -59,7 +59,7 @@ jobs:
           fail-on: error
 ```
 
-For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@v0.9.3`.
+For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@v0.9.4`.
 
 ## What the listing should highlight
 
@@ -75,9 +75,9 @@ For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@
 
 ## Release copy
 
-**ConfigReach v0.9.3 — configuration coverage for CI**
+**ConfigReach v0.9.4 — Python 3.10–3.14 compatibility and security hardening**
 
-ConfigReach complements code coverage by checking whether the environment variables, feature flags and configuration states that change application behaviour have test/runtime evidence.
+ConfigReach complements code coverage by checking whether the environment variables, feature flags and configuration states that change application behaviour have test/runtime evidence. v0.9.4 adds tested Python 3.10–3.14 support and strengthens repository-boundary, archive-extraction, dependency-audit and release-verification controls.
 
 Quick start:
 
@@ -102,4 +102,4 @@ Project hub:
 
 The repository contains a root `action.yml` with a Marketplace-oriented name and description, documented inputs, composite implementation and branding. The current release line also maintains a floating `v0` tag for stable pre-1.0 usage.
 
-ConfigReach v0.9.3 is published on GitHub Marketplace. The repository metadata, release line and installation documentation are synchronized with the live listing.
+ConfigReach v0.9.4 is the current release line. The repository metadata, release line and installation documentation are synchronized with the package release process.
