@@ -70,7 +70,7 @@ jobs:
       - name: Fail on denied dependency licenses
         shell: bash
         run: |
-          pip-licenses --format=json --output-file=/tmp/configreach-licenses.json
+          pip-licenses --with-system --format=json --output-file=/tmp/configreach-licenses.json
           python - <<'PY'
           import json
           import re
