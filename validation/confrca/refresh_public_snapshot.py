@@ -1,14 +1,13 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
-import shutil
 import tempfile
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-
-import pyarrow.parquet as pq
-from huggingface_hub import HfApi, hf_hub_download
 
 from run_confrca_benchmark import (
     DATASET_ID,
@@ -16,12 +15,12 @@ from run_confrca_benchmark import (
     DATASET_PAGE,
     LABEL_COLUMNS,
     REGISTRY_COLUMNS,
-    _write_csv,
 )
 
-PUBLIC_FILES = {
-    "config_version": "config_version.parquet",
-    "confrca_bench": "confrca_bench.parquet",
+DATASETS_ROWS_ENDPOINT = "https://datasets-server.huggingface.co/rows"
+PUBLIC_CONFIGS = {
+    "config_version": "config_version",
+    "confrca_bench": "confrca_bench",
 }
 
 
@@ -36,126 +35,154 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _download_public_hub_file(
-    filename: str,
-    destination: Path,
-    *,
-    revision: str,
-    cache_dir: Path,
-) -> str:
-    """Download one public ConfRCA file through the official Hub client.
+def _download_public_rows(config: str, columns: tuple[str, ...]) -> tuple[list[dict], list[str]]:
+    """Fetch a complete public Hugging Face dataset config via datasets-server.
 
-    The Hub client is intentionally used instead of a hand-built /resolve URL. Public
-    Hugging Face repositories may be served through Xet/CAS and require signed transport
-    URLs that the client negotiates even when no authentication token is needed.
+    The normal huggingface.co repository API currently returns HTTP 401 from GitHub-hosted
+    runners for this otherwise public dataset. The public Dataset Viewer service is a
+    separate, read-only endpoint and exposes the same tabular rows without a token.
     """
 
-    downloaded = Path(
-        hf_hub_download(
-            repo_id=DATASET_ID,
-            filename=filename,
-            repo_type="dataset",
-            revision=revision,
-            token=False,
-            cache_dir=str(cache_dir),
-            force_download=True,
+    rows: list[dict] = []
+    urls: list[str] = []
+    offset = 0
+    page_size = 100
+    total: int | None = None
+
+    while total is None or offset < total:
+        query = urllib.parse.urlencode(
+            {
+                "dataset": DATASET_ID,
+                "config": config,
+                "split": "train",
+                "offset": offset,
+                "length": page_size,
+            }
         )
-    )
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(downloaded, destination)
-    return _sha256(destination)
+        url = f"{DATASETS_ROWS_ENDPOINT}?{query}"
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "ConfigReach/0.9.3 external-validation",
+                "Accept": "application/json",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=180) as response:  # nosec B310
+            payload = json.load(response)
+
+        if total is None:
+            total = int(payload.get("num_rows_total", 0))
+            if total <= 0:
+                raise RuntimeError(f"datasets-server returned no rows for config={config!r}")
+
+        page = payload.get("rows", [])
+        if not page:
+            raise RuntimeError(
+                f"datasets-server stopped early for config={config!r}: "
+                f"offset={offset}, expected_total={total}"
+            )
+
+        for item in page:
+            raw = item.get("row", item)
+            missing = [column for column in columns if column not in raw]
+            if missing:
+                raise RuntimeError(
+                    f"datasets-server row for config={config!r} is missing columns: {missing}"
+                )
+            rows.append({column: raw.get(column) for column in columns})
+
+        urls.append(url)
+        offset += len(page)
+
+    if len(rows) != total:
+        raise RuntimeError(
+            f"datasets-server row-count mismatch for config={config!r}: "
+            f"downloaded={len(rows)}, expected={total}"
+        )
+    return rows, urls
+
+
+def _write_csv(path: Path, rows: list[dict], columns: tuple[str, ...]) -> int:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(columns), extrasaction="ignore")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({column: row.get(column) for column in columns})
+    return len(rows)
 
 
 def refresh_public_snapshot(data_dir: Path) -> dict:
     data_dir.mkdir(parents=True, exist_ok=True)
 
-    # Resolve main once, then download both files from the same immutable dataset commit.
-    # This prevents a moving-main race between the registry and labelled benchmark files.
-    dataset_info = HfApi().dataset_info(DATASET_ID, token=False)
-    upstream_revision = str(dataset_info.sha)
-    if not upstream_revision:
-        raise RuntimeError("Hugging Face did not return an immutable ConfRCA revision SHA")
+    registry_rows, registry_urls = _download_public_rows(
+        PUBLIC_CONFIGS["config_version"], REGISTRY_COLUMNS
+    )
+    label_rows, label_urls = _download_public_rows(
+        PUBLIC_CONFIGS["confrca_bench"], LABEL_COLUMNS
+    )
 
-    with tempfile.TemporaryDirectory(prefix="configreach-confrca-public-") as tmp:
-        tmpdir = Path(tmp)
-        cache_dir = tmpdir / "hf-cache"
-        registry_parquet = tmpdir / PUBLIC_FILES["config_version"]
-        labels_parquet = tmpdir / PUBLIC_FILES["confrca_bench"]
+    registry_csv = data_dir / "config_version.csv"
+    labels_csv = data_dir / "confrca_labels.csv"
+    registry_count = _write_csv(registry_csv, registry_rows, REGISTRY_COLUMNS)
+    label_count = _write_csv(labels_csv, label_rows, LABEL_COLUMNS)
+    registry_sha = _sha256(registry_csv)
+    labels_sha = _sha256(labels_csv)
 
-        registry_sha = _download_public_hub_file(
-            PUBLIC_FILES["config_version"],
-            registry_parquet,
-            revision=upstream_revision,
-            cache_dir=cache_dir,
-        )
-        labels_sha = _download_public_hub_file(
-            PUBLIC_FILES["confrca_bench"],
-            labels_parquet,
-            revision=upstream_revision,
-            cache_dir=cache_dir,
-        )
-
-        registry_rows = pq.read_table(
-            registry_parquet, columns=list(REGISTRY_COLUMNS)
-        ).to_pylist()
-        label_rows = pq.read_table(
-            labels_parquet, columns=list(LABEL_COLUMNS)
-        ).to_pylist()
-
-        registry_count = _write_csv(
-            data_dir / "config_version.csv", registry_rows, REGISTRY_COLUMNS
-        )
-        label_count = _write_csv(
-            data_dir / "confrca_labels.csv", label_rows, LABEL_COLUMNS
-        )
-
-        source = {
-            "schema_version": 1,
-            "dataset": DATASET_ID,
-            "dataset_page": DATASET_PAGE,
-            "upstream_revision": upstream_revision,
-            "license": DATASET_LICENSE,
-            "retrieved_at": datetime.now(timezone.utc).isoformat(),
-            "purpose": (
-                "External validation of ConfigReach configuration discovery and "
-                "pairwise dependency-scope signal."
+    source = {
+        "schema_version": 1,
+        "dataset": DATASET_ID,
+        "dataset_page": DATASET_PAGE,
+        "upstream_revision": (
+            "public datasets-server snapshot; exact vendored content is pinned by SHA-256"
+        ),
+        "license": DATASET_LICENSE,
+        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        "purpose": (
+            "External validation of ConfigReach configuration discovery and "
+            "pairwise dependency-scope signal."
+        ),
+        "transport": {
+            "service": "Hugging Face datasets-server /rows",
+            "authentication": "none",
+            "reason": (
+                "The huggingface.co repository API returned HTTP 401 from GitHub-hosted "
+                "runners for this public dataset; the read-only public Dataset Viewer "
+                "endpoint exposes the benchmark rows without credentials."
             ),
-            "transport": {
-                "client": "huggingface_hub",
-                "authentication": "anonymous/public (token=False)",
-                "reason": (
-                    "Official Hub transport negotiates public Xet/CAS signed URLs; direct "
-                    "/resolve URLs can return HTTP 401 on GitHub-hosted runners."
-                ),
+            "page_size": 100,
+        },
+        "files": {
+            "config_version": {
+                "upstream_config": PUBLIC_CONFIGS["config_version"],
+                "upstream_split": "train",
+                "pages_fetched": len(registry_urls),
+                "vendored_sha256": registry_sha,
+                "vendored_rows": registry_count,
+                "vendored_file": registry_csv.name,
+                "vendored_columns": list(REGISTRY_COLUMNS),
             },
-            "files": {
-                "config_version": {
-                    "upstream_path": PUBLIC_FILES["config_version"],
-                    "download_sha256": registry_sha,
-                    "upstream_size": registry_parquet.stat().st_size,
-                    "vendored_rows": registry_count,
-                    "vendored_file": "config_version.csv",
-                },
-                "confrca_bench": {
-                    "upstream_path": PUBLIC_FILES["confrca_bench"],
-                    "download_sha256": labels_sha,
-                    "upstream_size": labels_parquet.stat().st_size,
-                    "vendored_rows": label_count,
-                    "vendored_file": "confrca_labels.csv",
-                    "vendored_columns": list(LABEL_COLUMNS),
-                },
+            "confrca_bench": {
+                "upstream_config": PUBLIC_CONFIGS["confrca_bench"],
+                "upstream_split": "train",
+                "pages_fetched": len(label_urls),
+                "vendored_sha256": labels_sha,
+                "vendored_rows": label_count,
+                "vendored_file": labels_csv.name,
+                "vendored_columns": list(LABEL_COLUMNS),
             },
-            "redistribution_note": (
-                "The repository vendors the complete config_version registry and a "
-                "column-reduced copy of the human-labelled confrca_bench table needed "
-                "for evaluation, rather than the large prompt/trace payload. Original "
-                "data remain CC-BY-4.0 and attributable to ConfRCA."
-            ),
-        }
-        (data_dir / "SOURCE.json").write_text(
-            json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-        )
-        return source
+        },
+        "redistribution_note": (
+            "The repository vendors the complete config_version registry and a "
+            "column-reduced copy of the human-labelled confrca_bench table needed "
+            "for evaluation, rather than the large prompt/trace payload. Original "
+            "data remain CC-BY-4.0 and attributable to ConfRCA."
+        ),
+    }
+    (data_dir / "SOURCE.json").write_text(
+        json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return source
 
 
 if __name__ == "__main__":
@@ -164,11 +191,10 @@ if __name__ == "__main__":
         json.dumps(
             {
                 "dataset": snapshot["dataset"],
-                "upstream_revision": snapshot["upstream_revision"],
                 "registry_rows": snapshot["files"]["config_version"]["vendored_rows"],
                 "label_rows": snapshot["files"]["confrca_bench"]["vendored_rows"],
-                "registry_sha256": snapshot["files"]["config_version"]["download_sha256"],
-                "labels_sha256": snapshot["files"]["confrca_bench"]["download_sha256"],
+                "registry_sha256": snapshot["files"]["config_version"]["vendored_sha256"],
+                "labels_sha256": snapshot["files"]["confrca_bench"]["vendored_sha256"],
             },
             sort_keys=True,
         )
