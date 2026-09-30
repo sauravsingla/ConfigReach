@@ -116,8 +116,8 @@ configreach coverage .
 The image is public, multi-architecture (`linux/amd64` and `linux/arm64`), and published with SBOM/provenance:
 
 ```bash
-docker pull ghcr.io/sauravsingla/ConfigReach:latest
-docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/ConfigReach:latest scan .
+docker pull ghcr.io/sauravsingla/configreach:latest
+docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/configreach:latest scan .
 ```
 
 ### GitHub Action
