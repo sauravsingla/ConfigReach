@@ -75,6 +75,20 @@ def _literal(node: ast.AST | None) -> object | None:
         return None
 
 
+def _subscript_slice(node: ast.Subscript) -> ast.AST:
+    """Return a version-independent AST node for a subscript slice.
+
+    Python 3.8 wraps subscripts in ``ast.Index`` while 3.9+ exposes the
+    underlying expression directly. Normalizing here keeps Literal domains and
+    environment-key extraction identical across the supported runtime range.
+    """
+    value = node.slice
+    index_type = getattr(ast, "Index", None)
+    if index_type is not None and isinstance(value, index_type):
+        return value.value
+    return value
+
+
 def _line_number(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
@@ -135,7 +149,8 @@ class PythonVisitor(ast.NodeVisitor):
         if isinstance(node, ast.Subscript):
             base = self._dotted(node.value)
             if base.endswith("Literal"):
-                values = node.slice.elts if isinstance(node.slice, ast.Tuple) else [node.slice]
+                slice_node = _subscript_slice(node)
+                values = slice_node.elts if isinstance(slice_node, ast.Tuple) else [slice_node]
                 out = set()
                 for value_node in values:
                     value = _literal(value_node)
@@ -165,7 +180,7 @@ class PythonVisitor(ast.NodeVisitor):
             assigned = _literal(node.value)
             for target in node.targets:
                 if isinstance(target, ast.Subscript) and self._dotted(target.value) == "os.environ":
-                    key_name = _literal(target.slice)
+                    key_name = _literal(_subscript_slice(target))
                     if isinstance(key_name, str) and assigned is not None:
                         key = self.item(key_name)
                         key.categories.add("env")
@@ -306,7 +321,7 @@ class PythonVisitor(ast.NodeVisitor):
 
     def visit_Subscript(self, node: ast.Subscript) -> None:
         if self._dotted(node.value) == "os.environ":
-            name = _literal(node.slice)
+            name = _literal(_subscript_slice(node))
             if isinstance(name, str):
                 self._record_read(name, node)
         self.generic_visit(node)
@@ -337,7 +352,7 @@ class PythonVisitor(ast.NodeVisitor):
             if isinstance(node.func, ast.Attribute) and node.func.attr in {"lower", "casefold", "strip"}:
                 return self._env_name_from_expr(node.func.value)
         if isinstance(node, ast.Subscript) and self._dotted(node.value) == "os.environ":
-            value = _literal(node.slice)
+            value = _literal(_subscript_slice(node))
             return value if isinstance(value, str) else None
         return None
 
