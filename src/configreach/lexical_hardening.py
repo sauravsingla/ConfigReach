@@ -501,7 +501,7 @@ def _pattern_location(location: Location) -> bool:
         detail in {"javascript", "go", "java", "rust", "ruby", "php", "shell", "feature-flag"}
         or detail.startswith("javascript:")
         or detail.startswith("go:")
-        or detail.startswith("java:spring:")
+        or detail in {"java:spring:@Value", "java:spring:getProperty"}
         or detail == "java:feature-flag"
         or detail.startswith("dotnet:")
         or detail.startswith("github-")
