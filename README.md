@@ -4,7 +4,7 @@
 
 **ConfigReach is a deterministic, CPU-only, offline configuration coverage analyzer that shows which runtime configuration inputs, values, branches and important combinations your tests actually exercise.** Think **Codecov for configuration space**.
 
-[![PyPI](https://img.shields.io/pypi/v/configreach.svg)](https://pypi.org/project/configreach/)
+[![PyPI v0.9.5](https://img.shields.io/badge/PyPI-v0.9.5-blue.svg)](https://pypi.org/project/configreach/0.9.5/)
 [![CI](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml)
 [![Curated 50K Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml)
