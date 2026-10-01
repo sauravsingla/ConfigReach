@@ -20,29 +20,32 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify GHCR package is anonymously pullable and multi-architecture
+      - name: Verify GHCR package is anonymously pullable, multi-architecture and non-root
+        shell: bash
         run: |
+          set -euo pipefail
           docker logout ghcr.io >/dev/null 2>&1 || true
           docker buildx imagetools inspect ghcr.io/sauravsingla/configreach:latest | tee /tmp/configreach-image.txt
           grep -q 'linux/amd64' /tmp/configreach-image.txt
           grep -q 'linux/arm64' /tmp/configreach-image.txt
           docker pull ghcr.io/sauravsingla/configreach:latest
+          test "$(docker run --rm --entrypoint id ghcr.io/sauravsingla/configreach:latest -u)" != "0"
           docker run --rm ghcr.io/sauravsingla/configreach:latest --help >/tmp/configreach-help.txt
           test -s /tmp/configreach-help.txt
 
       - name: Scan published image with Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ghcr.io/sauravsingla/configreach:latest
           format: sarif
           output: trivy-results.sarif
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          exit-code: "0"
+          exit-code: "1"
 
       - name: Upload container SARIF
         if: always() && hashFiles('trivy-results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
         with:
           sarif_file: trivy-results.sarif
           category: configreach-container
