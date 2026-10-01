@@ -17,7 +17,7 @@ ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry 
 
 ## Curated 50K benchmark
 
-ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is programmatically generated from explicit, version-controlled scenario families and scored through the production `configreach.engine.scan()` entry point.
+ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is assembled from explicit, version-controlled scenario families and scored through the production `configreach.engine.scan()` entry point.
 
 | Metric | Result |
 |---|---:|
