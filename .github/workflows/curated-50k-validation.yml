@@ -2,7 +2,7 @@ name: Curated 50K validation
 
 on:
   push:
-    branches: [benchmark/curated-50k-lexical-hardening]
+    branches: [main]
     paths:
       - src/configreach/**
       - tests/test_lexical_hardening.py
