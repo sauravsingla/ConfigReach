@@ -42,7 +42,7 @@ ConfigReach is a deterministic, CPU-only configuration coverage analyzer for sof
 
 ConfigReach is evaluated on a committed **50,000-case controlled curated benchmark** with deterministic ground-truth labels. The corpus is balanced with **25,000 positive** and **25,000 negative** scenarios across supported programming languages and configuration formats.
 
-The benchmark is programmatically generated from explicit version-controlled scenario families and scored through the production **`configreach.engine.scan`** entry point.
+The benchmark is curated from explicit, version-controlled scenario families with deterministic ground-truth labels and scored through the production **`configreach.engine.scan`** entry point.
 
 | Metric | Result |
 |---|---:|
