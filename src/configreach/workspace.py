@@ -100,7 +100,7 @@ def detect_workspaces(root: str | Path) -> list[Path]:
     root_path = Path(root).resolve()
     roots: set[Path] = set()
     for path in root_path.rglob("*"):
-        if not path.is_file() or not _is_marker(path):
+        if path.is_symlink() or not path.is_file() or not _is_marker(path):
             continue
         try:
             rel = path.relative_to(root_path).as_posix()
