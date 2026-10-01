@@ -99,7 +99,7 @@ jobs:
           import tomllib
           import configreach
 
-          metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))
+          metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
           package_version = metadata["project"]["version"]
           if package_version != configreach.__version__:
               raise SystemExit(
@@ -275,7 +275,7 @@ jobs:
           provenance: mode=max
           sbom: true
 
-      - name: Verify published image anonymously
+      - name: Verify published image anonymously and non-root
         env:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
@@ -286,6 +286,7 @@ jobs:
           docker logout ghcr.io >/dev/null 2>&1 || true
           docker image rm "$IMAGE" >/dev/null 2>&1 || true
           docker pull "$IMAGE"
+          test "$(docker run --rm --entrypoint id "$IMAGE" -u)" != "0"
           docker run --rm "$IMAGE" --help >/tmp/configreach-container-help.txt
           test -s /tmp/configreach-container-help.txt
           echo "Digest: ${{ steps.image.outputs.digest }}"
@@ -335,11 +336,12 @@ jobs:
       actions: write
       contents: read
     steps:
-      - name: Dispatch documentation publishers from main
+      - name: Dispatch public-surface publishers from main
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh workflow run publish-huggingface.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run publish-huggingface-dataset.yml --repo "$GITHUB_REPOSITORY" --ref main
           gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
 
       - name: Release summary
@@ -353,4 +355,6 @@ jobs:
             echo "- GHCR: ghcr.io/sauravsingla/configreach:${VERSION}"
             echo "- GitHub Release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${VERSION}"
             echo "- GitHub Action: uses: ${GITHUB_REPOSITORY}@v${VERSION%%.*}"
+            echo "- Hugging Face Space: synchronized from main"
+            echo "- Hugging Face Dataset: synchronized from main"
           } >> "$GITHUB_STEP_SUMMARY"
