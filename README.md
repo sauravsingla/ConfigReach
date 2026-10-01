@@ -196,6 +196,51 @@ configreach init [PATH]
 configreach trace --path . -- pytest -q
 ```
 
+### What each command does
+
+| Command | Purpose | Example |
+|---|---|---|
+| `scan` | Scan a repository, discover configuration inputs and report coverage/findings. | `configreach scan .` |
+| `coverage` | Show configuration coverage for discovered inputs. | `configreach coverage .` |
+| `explain` | Show where a specific configuration key is declared, read and tested. | `configreach explain PAYMENT_MODE .` |
+| `matrix` | Show known values/states and which ones have test evidence. | `configreach matrix .` |
+| `plan` | Generate bounded deterministic configuration test suggestions from known finite domains. | `configreach plan . --strength 2` |
+| `plan --fixture` | Export suggested configuration cases as test scaffolding. | `configreach plan . --fixture pytest --output configreach_cases.py` |
+| `workspace` | Analyze monorepo workspaces independently and report combined coverage. | `configreach workspace .` |
+| `adapters` | List installed configuration-analysis adapters and capabilities. | `configreach adapters --format json` |
+| `reproduce` | Repeat uncached scans and verify deterministic report digests. | `configreach reproduce . --runs 3` |
+| `schema` | Inspect or validate ConfigReach machine-output schema versions. | `configreach schema --format json` |
+| `diff` | Compare configuration coverage between Git revisions. | `configreach diff origin/main...HEAD .` |
+| `pr-comment` | Produce a pull-request-friendly configuration-change summary. | `configreach pr-comment origin/main...HEAD .` |
+| `doctor` | Check the target repository and local ConfigReach setup before analysis. | `configreach doctor .` |
+| `export` | Produce machine-readable or shareable JSON, SARIF or HTML reports. | `configreach export . --format html --output configreach.html` |
+| `baseline create` | Record an approved baseline so existing keys can be excluded from CI key-coverage gating. | `configreach baseline create .` |
+| `cache clear` | Clear ConfigReach's local analysis cache. | `configreach cache clear .` |
+| `init` | Initialize ConfigReach configuration for a repository. | `configreach init .` |
+| `trace` | Explicitly run an operator-supplied test command and collect lightweight runtime configuration evidence. | `configreach trace --path . -- pytest -q` |
+
+### Recommended first evaluation
+
+Run these from the **repository root**, ideally in a project that contains both application code and tests:
+
+```bash
+configreach doctor .
+configreach scan .
+configreach coverage .
+configreach matrix .
+configreach plan . --strength 2
+configreach export . --format html --output configreach.html
+```
+
+If the project has a trusted pytest suite and runtime evidence is useful, tracing is available as an explicit opt-in:
+
+```bash
+configreach trace --path . -- pytest -q
+configreach scan .
+```
+
+`trace` executes the command supplied by the operator; use it only for code and tests that the environment already trusts to execute.
+
 ## Deterministic test planning
 
 `configreach plan` converts already-known finite configuration domains into bounded 1-wise, 2-wise or 3-wise suggestions. Existing test scenarios are subtracted first, sensitive-looking keys are excluded, and CPU-safety limits prevent Cartesian-product explosions.
