@@ -33,10 +33,10 @@ ConfigReach is evaluated on a committed **50,000-case curated benchmark** with d
 | FP | **0** |
 | TN | **25,000** |
 | FN | **0** |
-| Precision | **100.0000%** |
-| Recall | **100.0000%** |
-| F1 | **100.0000%** |
-| Accuracy | **100.0000%** |
+| Precision | **100%** |
+| Recall | **100%** |
+| F1 | **100%** |
+| Accuracy | **100%** |
 
 The benchmark data, aggregate results and row-level predictions are available in the [validation folder](validation/). The same 50K benchmark is also published as a [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation).
 
