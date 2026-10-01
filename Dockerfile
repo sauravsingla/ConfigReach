@@ -11,9 +11,24 @@ WORKDIR /opt/configreach
 COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 
-RUN python -m pip install .
+# Apply currently available distribution security fixes before installing the
+# application. ConfigReach itself has no runtime dependency on pip/setuptools/
+# wheel, so remove those packaging tools after installation to minimize the
+# final attack surface. The released process runs as an unprivileged UID.
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m pip install . \
+    && python -m pip uninstall -y setuptools wheel \
+    && python -m pip uninstall -y pip \
+    && groupadd --gid 10001 configreach \
+    && useradd --uid 10001 --gid 10001 --create-home --home-dir /home/configreach --shell /usr/sbin/nologin configreach \
+    && mkdir -p /workspace \
+    && chown 10001:10001 /workspace /home/configreach
 
+ENV HOME=/home/configreach
 WORKDIR /workspace
+USER 10001:10001
 
 LABEL org.opencontainers.image.title="ConfigReach" \
       org.opencontainers.image.description="Deterministic configuration coverage for software repositories" \

@@ -4,45 +4,102 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "41 5 * * 3"
+  pull_request:
+    branches: [main]
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - pyproject.toml
+      - src/**
+      - .github/workflows/container-scan.yml
   push:
     branches: [main]
     paths:
       - Dockerfile
       - .dockerignore
+      - pyproject.toml
+      - src/**
       - .github/workflows/container-scan.yml
-      - .github/workflows/publish-ghcr.yml
 
 permissions:
   contents: read
   security-events: write
 
 jobs:
-  scan:
+  source-image:
+    name: current source image
     runs-on: ubuntu-latest
     steps:
-      - name: Verify GHCR package is anonymously pullable and multi-architecture
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build current source image
+        run: docker build -t configreach:security .
+
+      - name: Verify current image is non-root and works offline/read-only
+        shell: bash
         run: |
+          set -euo pipefail
+          test "$(docker run --rm --entrypoint id configreach:security -u)" != "0"
+          docker run --rm \
+            --network none \
+            --read-only \
+            --tmpfs /tmp:rw,nosuid,nodev,size=16m \
+            -v "$PWD/examples/basic:/workspace:ro" \
+            configreach:security scan . --no-cache --format json \
+            > /tmp/configreach-container-report.json
+          python -m json.tool /tmp/configreach-container-report.json >/dev/null
+
+      - name: Scan current source image with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: configreach:security
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Upload container SARIF
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          sarif_file: trivy-results.sarif
+          category: configreach-container-source
+
+  published-image:
+    name: published GHCR image
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify GHCR package is anonymously pullable, multi-architecture and non-root
+        shell: bash
+        run: |
+          set -euo pipefail
           docker logout ghcr.io >/dev/null 2>&1 || true
           docker buildx imagetools inspect ghcr.io/sauravsingla/configreach:latest | tee /tmp/configreach-image.txt
           grep -q 'linux/amd64' /tmp/configreach-image.txt
           grep -q 'linux/arm64' /tmp/configreach-image.txt
           docker pull ghcr.io/sauravsingla/configreach:latest
+          test "$(docker run --rm --entrypoint id ghcr.io/sauravsingla/configreach:latest -u)" != "0"
           docker run --rm ghcr.io/sauravsingla/configreach:latest --help >/tmp/configreach-help.txt
           test -s /tmp/configreach-help.txt
 
       - name: Scan published image with Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ghcr.io/sauravsingla/configreach:latest
           format: sarif
-          output: trivy-results.sarif
+          output: trivy-published.sarif
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          exit-code: "0"
+          exit-code: "1"
 
-      - name: Upload container SARIF
-        if: always() && hashFiles('trivy-results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Upload published container SARIF
+        if: always() && hashFiles('trivy-published.sarif') != ''
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
         with:
-          sarif_file: trivy-results.sarif
-          category: configreach-container
+          sarif_file: trivy-published.sarif
+          category: configreach-container-published

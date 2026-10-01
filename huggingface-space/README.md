@@ -42,7 +42,7 @@ ConfigReach is a deterministic, CPU-only configuration coverage analyzer for sof
 
 ConfigReach is evaluated on a committed **50,000-case controlled curated benchmark** with deterministic ground-truth labels. The corpus is balanced with **25,000 positive** and **25,000 negative** scenarios across supported programming languages and configuration formats.
 
-The benchmark is scored through the production **`configreach.engine.scan`** entry point.
+The benchmark is programmatically generated from explicit version-controlled scenario families and scored through the production **`configreach.engine.scan`** entry point.
 
 | Metric | Result |
 |---|---:|
@@ -58,7 +58,7 @@ The benchmark is scored through the production **`configreach.engine.scan`** ent
 
 The full 50K corpus and row-level evidence are published in the linked Hugging Face Dataset and committed in GitHub.
 
-> **Scope:** this is the measured result on the committed controlled curated benchmark. It is not a claim of universal real-world accuracy. The benchmark is programmatically generated from explicit version-controlled scenario families with deterministic labels; it is not described as independently human-labelled.
+> **Scope:** this is the measured result on the committed controlled curated benchmark. It is not a claim of universal real-world accuracy and is not independently human-labelled.
 
 ## Explore the benchmark
 
@@ -78,17 +78,11 @@ configreach scan .
 configreach coverage .
 ```
 
-To reproduce the exact currently committed benchmark source before the next package release, install from `main`:
-
-```bash
-python -m pip install --upgrade "git+https://github.com/sauravsingla/ConfigReach.git@main"
-```
-
 ConfigReach requires no GPU, LLM, API key, hosted service, telemetry, or paid dependency. Static analysis does not execute the target repository.
 
 ## Current repository metadata
 
-The current repository package metadata is **ConfigReach v0.9.4** and supports **Python 3.10–3.14**. The 50K evidence above is tied to the committed `main` implementation and its production scanner entry point.
+The current repository package metadata is **ConfigReach v0.9.5** and supports **Python 3.10–3.14**. The 50K-benchmarked implementation and enterprise security hardening are part of the v0.9.5 release line.
 
 ## Project links
 
@@ -96,6 +90,7 @@ The current repository package metadata is **ConfigReach v0.9.4** and supports *
 - [Hugging Face curated 50K dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
 - [GitHub repository](https://github.com/sauravsingla/ConfigReach)
 - [PyPI package](https://pypi.org/project/configreach/)
+- [Enterprise security intake guide](https://github.com/sauravsingla/ConfigReach/blob/main/docs/enterprise-security.md)
 - [50K benchmark methodology](https://github.com/sauravsingla/ConfigReach/blob/main/validation/curated_50k/README.md)
 - [50K benchmark manifest](https://github.com/sauravsingla/ConfigReach/blob/main/validation/curated_50k/manifest.json)
 

@@ -89,10 +89,25 @@ def _drop_schema_flattening(report: ScanReport, rel: str) -> None:
         report.keys.pop(name, None)
 
 
+def _add_symlink_ignores(root: Path, settings: Settings) -> None:
+    """Prevent later passes from reading repository-controlled file symlinks."""
+    known = set(settings.ignores)
+    for path in root.rglob("*"):
+        if not path.is_symlink():
+            continue
+        try:
+            rel = path.relative_to(root).as_posix()
+        except ValueError:
+            continue
+        if rel not in known:
+            settings.ignores.append(rel)
+            known.add(rel)
+
+
 def _semantic_files(root: Path, settings: Settings) -> list[Path]:
     out: list[Path] = []
     for path in root.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in SEMANTIC_EXTENSIONS:
+        if path.is_symlink() or not path.is_file() or path.suffix.lower() not in SEMANTIC_EXTENSIONS:
             continue
         rel = path.relative_to(root).as_posix()
         if settings.ignored(rel):
@@ -109,6 +124,8 @@ def _semantic_files(root: Path, settings: Settings) -> list[Path]:
 def _dotnet_package_roots(root: Path) -> list[str]:
     roots: set[str] = set()
     for path in root.rglob("*.csproj"):
+        if path.is_symlink() or not path.is_file():
+            continue
         rel = path.parent.relative_to(root).as_posix()
         roots.add("." if rel == "." else rel)
     return sorted(roots)
@@ -118,6 +135,7 @@ def scan(root: str | Path = ".", settings: Settings | None = None, *, use_cache:
     started = time.perf_counter()
     root_path = Path(root).resolve()
     settings = settings or load_settings(root_path)
+    _add_symlink_ignores(root_path, settings)
     base = core_scan(root_path, settings=settings, use_cache=use_cache)
     report = _upgrade(base)
 

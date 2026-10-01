@@ -5,8 +5,8 @@ type: software
 authors:
   - family-names: "Singla"
     given-names: "Saurav"
-version: "0.9.4"
-date-released: "2026-09-30"
+version: "0.9.5"
+date-released: "2026-10-01"
 license: MIT
 repository-code: "https://github.com/sauravsingla/ConfigReach"
 repository: "https://zenodo.org/records/23038726"
