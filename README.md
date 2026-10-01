@@ -24,7 +24,7 @@ ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry 
 
 ## Curated 50K benchmark
 
-ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is scored through the production `configreach.engine.scan()` entry point.
+ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is programmatically generated from explicit, version-controlled scenario families and scored through the production `configreach.engine.scan()` entry point.
 
 | Metric | Result |
 |---|---:|
@@ -40,7 +40,7 @@ ConfigReach is evaluated on a committed **50,000-case curated benchmark** with d
 
 The committed benchmark data is in [`validation/curated_50k/data/configreach_50k_scenarios.jsonl`](validation/curated_50k/data/configreach_50k_scenarios.jsonl). Aggregate results are in [`validation/results/curated_50k.md`](validation/results/curated_50k.md) and [`validation/results/curated_50k.json`](validation/results/curated_50k.json), with row-level predictions in [`validation/results/curated_50k_predictions.csv`](validation/results/curated_50k_predictions.csv). The same 50K evidence is published in the [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation) and summarized in the [Hugging Face Space](https://huggingface.co/spaces/sauravsingla08/ConfigReach).
 
-> Scope: this is the measured result on the committed controlled curated benchmark; it is not a claim of universal real-world accuracy.
+> Scope: this is the measured result on the committed controlled curated benchmark; it is not independently human-labelled evidence and is not a claim of universal real-world accuracy.
 
 ## Why configuration coverage?
 
@@ -71,7 +71,7 @@ Different teams describe configuration-coverage gaps in different ways. ConfigRe
 
 ### PyPI CLI
 
-ConfigReach supports CPython **3.10 through 3.14**.
+ConfigReach supports CPython **3.10 through 3.14**. The 50K-benchmarked enterprise-hardening changes are released in **v0.9.5**.
 
 ```bash
 python -m pip install --upgrade configreach
@@ -79,24 +79,20 @@ configreach scan .
 configreach coverage .
 ```
 
-The published package is the stable release line. The **50K benchmark above is tied to the current `main` implementation**; to reproduce that exact implementation before the next package release, install directly from `main`:
-
-```bash
-python -m pip install --upgrade "git+https://github.com/sauravsingla/ConfigReach.git@main"
-```
-
 ### GitHub Container Registry
 
-The image is public, multi-architecture (`linux/amd64` and `linux/arm64`), and published with SBOM/provenance:
+The image is public, multi-architecture (`linux/amd64` and `linux/arm64`), runs as a dedicated **non-root** user, and is published with SBOM/provenance:
 
 ```bash
 docker pull ghcr.io/sauravsingla/configreach:latest
-docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/configreach:latest scan .
+docker run --rm -v "$PWD:/workspace:ro" ghcr.io/sauravsingla/configreach:latest scan . --no-cache
 ```
+
+For high-assurance environments, pin an approved version/digest and run with egress disabled and a read-only root filesystem; see [`docs/enterprise-security.md`](docs/enterprise-security.md).
 
 ### GitHub Action
 
-Use the floating major tag for the stable released v0 line:
+Use the floating major tag for stable v0 updates:
 
 ```yaml
 - uses: sauravsingla/ConfigReach@v0
@@ -107,7 +103,7 @@ Use the floating major tag for the stable released v0 line:
     fail-on: error
 ```
 
-The curated 50K result is measured from current `main`; the floating `@v0` tag remains the stable released Action until the next release moves that tag forward. See [`docs/marketplace.md`](docs/marketplace.md) for Action/Marketplace installation details.
+For regulated internal workflows, pin the exact approved release or commit according to your supply-chain policy. See [`docs/marketplace.md`](docs/marketplace.md) for Action/Marketplace installation details.
 
 ### Development from source
 
@@ -317,7 +313,7 @@ configreach trace -- pytest -q
 configreach scan .
 ```
 
-Tracing is explicit opt-in. The Python tracer records key names plus short SHA-256-derived value fingerprints; it does not persist raw runtime values.
+Tracing is explicit opt-in and executes the command supplied by the operator. Use it only for code your environment is already willing to execute. The Python tracer records key names plus short SHA-256-derived value fingerprints; it does not intentionally persist raw runtime values.
 
 ## Deterministic findings
 
@@ -356,11 +352,13 @@ jobs:
           fail-on: error
 ```
 
-`@v0` is the stable released Action line. The curated 50K benchmark result above is tied to the current `main` implementation until the next release advances `v0`. Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
+`@v0` is the stable released Action line and advances only through the verified release workflow. Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
 
 ## Supply-chain and security gates
 
-The repository runs CodeQL, OpenSSF Scorecard, Dependabot, GitHub dependency review when the Dependency Graph is available, mandatory cross-version Python vulnerability/license audits, container vulnerability scanning, action smoke tests, reproducible wheel/sdist builds and cross-OS report reproducibility. GHCR images are anonymously pull-tested, published for amd64/arm64, and include SBOM/provenance from BuildKit. See [`SECURITY.md`](SECURITY.md) and [`CHANGELOG.md`](CHANGELOG.md).
+The repository runs CodeQL, **Gitleaks full-history secret scanning**, OpenSSF Scorecard, Dependabot, GitHub dependency review when the Dependency Graph is available, mandatory cross-version Python vulnerability/license audits, fail-closed HIGH/CRITICAL container vulnerability scanning, action smoke tests, reproducible wheel/sdist builds and cross-OS report reproducibility. External GitHub Actions used by project workflows are required to be pinned to immutable commit SHAs. Validation jobs are read-only reproducibility gates rather than automated writers to `main`. GHCR images run non-root, are anonymously pull-tested, are published for amd64/arm64, and include SBOM/provenance from BuildKit.
+
+For regulated-enterprise intake, threat boundaries, restrictive offline/container operation, internal rebuilding and approval steps, see [`docs/enterprise-security.md`](docs/enterprise-security.md). See also [`SECURITY.md`](SECURITY.md) and [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Benchmark, performance budget and testing
 
@@ -375,15 +373,16 @@ configreach reproduce examples/combinations --runs 3
 
 The dedicated performance workflow runs the full semantic engine over a synthetic Python/TypeScript/Go/Java/.NET repository and uses a deliberately conservative throughput floor to catch order-of-magnitude regressions without turning runner noise into flaky CI.
 
-The suite covers language/config discovery, deployment sources, validators, Pydantic/feature flags, branch provenance, combination metrics, real Git PR comparison, baselines, cache behavior, workspace-local invalidation, planners, fixture exporters, plugin compatibility, schema compatibility, reproducibility, performance gating, HTML/SARIF/JSON/Markdown reporters and CLI policies.
+The suite covers language/config discovery, deployment sources, validators, Pydantic/feature flags, branch provenance, combination metrics, real Git PR comparison, baselines, cache behavior, workspace-local invalidation, planners, fixture exporters, plugin compatibility, schema compatibility, reproducibility, performance gating, HTML/SARIF/JSON/Markdown reporters, CLI policies and untrusted-repository security boundaries.
 
 ## Design principles
 
 - CPU-only; standard-library runtime on Python 3.11+ and only the pinned `tomli` backport on Python 3.10.
 - No network, telemetry, model inference or paid API in the core.
 - Static scanning never executes target application code.
-- Runtime tracing is explicit opt-in.
+- Repository-controlled file symlinks are ignored by the production scanner.
+- Runtime tracing is explicit opt-in and executes only the operator-supplied command.
 - Unknown semantics stay unknown rather than being guessed.
 - Machine output is designed for deterministic CI use.
 
-See [docs/architecture.md](docs/architecture.md), [docs/threat-model.md](docs/threat-model.md), [docs/schema-compatibility.md](docs/schema-compatibility.md), [docs/roadmap.md](docs/roadmap.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+See [docs/architecture.md](docs/architecture.md), [docs/threat-model.md](docs/threat-model.md), [docs/enterprise-security.md](docs/enterprise-security.md), [docs/schema-compatibility.md](docs/schema-compatibility.md), [docs/roadmap.md](docs/roadmap.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
