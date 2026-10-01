@@ -2,7 +2,7 @@
 
 Results from the repository's hand-labelled benchmark corpus. Labels are committed before scoring and include deliberately difficult positive and negative examples.
 
-Tool: ConfigReach `0.9.4` at source revision `8a3f93b2f696d5f32ab610506143cc2f35db6b2d`.
+Tool: ConfigReach `0.9.4` at source revision `916a34838871cd7cfe134d84ae5e7836022ab223`.
 
 | Task | Precision | Recall | F1 | TP | FP | FN |
 |---|---:|---:|---:|---:|---:|---:|
