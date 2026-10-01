@@ -87,6 +87,6 @@ For high-assurance environments:
 
 The controls above reduce software-supply-chain and untrusted-input risk; they do not make ConfigReach a sandbox, malware scanner, secrets manager or runtime policy engine. Static scanning deliberately does not execute the target application. Optional tracing does execute an operator-supplied command and must be governed accordingly.
 
-The 50,000-case benchmark is controlled, programmatically generated from explicit version-controlled scenario families, and deterministically labelled. Its measured result is evidence for that committed benchmark, not a claim of universal real-world accuracy.
+The 50,000-case benchmark is a controlled curated benchmark built around explicit, version-controlled scenario families with deterministic labels. Its measured result is evidence for that committed benchmark, not a claim of universal real-world accuracy.
 
 See also [`SECURITY.md`](../SECURITY.md), [`docs/threat-model.md`](threat-model.md) and the repository's security workflows under [`.github/workflows`](../.github/workflows/).
