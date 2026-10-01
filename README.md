@@ -22,61 +22,25 @@ ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry 
 
 ![ConfigReach terminal example](docs/demo.svg)
 
-## Real-world validation & measured accuracy
+## Curated 50K benchmark
 
-ConfigReach publishes reproducible validation evidence instead of relying only on feature claims.
+ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is scored through the production `configreach.engine.scan()` entry point.
 
-### Frozen external holdout — 11 repositories, 9 ecosystems
+| Metric | Result |
+|---|---:|
+| Scenarios | **50,000** |
+| TP | **25,000** |
+| FP | **0** |
+| TN | **25,000** |
+| FN | **0** |
+| Precision | **100.0000%** |
+| Recall | **100.0000%** |
+| F1 | **100.0000%** |
+| Accuracy | **100.0000%** |
 
-The current frozen holdout scans **11 pinned public open-source repositories** selected before ConfigReach results were examined. The corpus is disjoint from the earlier 10-project validation baseline and spans Python, JavaScript/TypeScript, Go/Kubernetes, Java/Spring, .NET/C#, Rust, Ruby, PHP and Terraform.
+The committed benchmark data is in [`validation/curated_50k/data/configreach_50k_scenarios.jsonl`](validation/curated_50k/data/configreach_50k_scenarios.jsonl). Aggregate results are in [`validation/results/curated_50k.md`](validation/results/curated_50k.md) and [`validation/results/curated_50k.json`](validation/results/curated_50k.json), with row-level predictions in [`validation/results/curated_50k_predictions.csv`](validation/results/curated_50k_predictions.csv).
 
-- **11 / 11 repository jobs completed successfully**
-- **96,845** configuration inputs discovered
-- **5,539** inputs with detected test/runtime evidence
-- **5.72%** aggregate observed configuration coverage
-- **34,933.6s (~9.70 cumulative scanner-hours)** across independently executed jobs; this is the sum of per-repository scanner runtimes, not workflow wall-clock elapsed time
-- **0** repositories overlap the earlier validation baseline
-- All targets are pinned to immutable upstream commit SHAs
-
-| Ecosystem | Projects | Configs | Covered | Observed coverage |
-|---|---:|---:|---:|---:|
-| Python | 2 | 47,346 | 1,277 | 2.70% |
-| JavaScript/TypeScript | 2 | 18,151 | 809 | 4.46% |
-| Go/Kubernetes | 1 | 5,107 | 242 | 4.74% |
-| Java/Spring | 1 | 4,464 | 673 | 15.08% |
-| .NET/C# | 1 | 16,780 | 2,199 | 13.10% |
-| Rust | 1 | 2,801 | 132 | 4.71% |
-| Ruby | 1 | 199 | 148 | 74.37% |
-| PHP | 1 | 1,707 | 59 | 3.46% |
-| Terraform | 1 | 290 | 0 | 0.00% |
-
-The 5.72% figure is **configuration evidence coverage, not precision, recall or F1**. It is the fraction of discovered configuration inputs for which ConfigReach linked test/runtime evidence. Precision/recall require independently labelled ground truth and are measured separately below.
-
-Exact upstream SHAs, per-repository counts, runtimes, artifact IDs and SHA-256 artifact digests are published in [`validation/results/external-holdout-full.md`](validation/results/external-holdout-full.md) and [`validation/results/external-holdout-full.json`](validation/results/external-holdout-full.json). The successful full run is preserved in [GitHub Actions run 36588655396](https://github.com/sauravsingla/ConfigReach/actions/runs/36588655396).
-
-The earlier 10-project baseline remains published for historical comparison in [`validation/results/real-world.md`](validation/results/real-world.md): **17,777** configuration inputs, **639** inputs with detected evidence and **3.6%** aggregate observed key coverage.
-
-### External precision & recall evaluation
-
-External precision, recall and F1 will be reported only from **independently labelled cases sampled from the frozen external holdout**. Until that review is complete, ConfigReach makes **no external precision/recall/F1 claim** from the 96,845 discovered inputs or the 5.72% configuration-coverage figure.
-
-When external accuracy results are published, this section will report the reviewed sample size, TP, FP, FN, precision, recall, F1, repository/ecosystem coverage, sampling method and annotation protocol so the measurement can be interpreted and reproduced.
-
-### Small hand-labelled accuracy benchmark
-
-A separate small committed ground-truth corpus measures precision, recall and F1 for five core analysis tasks. On the current **37 labelled benchmark decisions**, the deterministic hardening pass produces zero false positives and zero false negatives:
-
-| Task | Precision | Recall | F1 | TP | FP | FN |
-|---|---:|---:|---:|---:|---:|---:|
-| Environment-variable discovery | **100.0%** | **100.0%** | **100.0%** | 11 | 0 | 0 |
-| Feature flags | **100.0%** | **100.0%** | **100.0%** | 2 | 0 | 0 |
-| Configuration declarations | **100.0%** | **100.0%** | **100.0%** | 11 | 0 | 0 |
-| Test evidence | **100.0%** | **100.0%** | **100.0%** | 6 | 0 | 0 |
-| Branch inference | **100.0%** | **100.0%** | **100.0%** | 7 | 0 | 0 |
-
-**Micro precision: 100.0% · Micro recall: 100.0% · Micro F1: 100.0% · Macro F1: 100.0% on this committed corpus.**
-
-This is deliberately a **corpus-specific measurement, not a claim of universal 100% accuracy**. The benchmark remains intentionally small and transparent and contains difficult positives/negatives for indirect environment names, JavaScript destructuring, unrelated `variation()` calls, project metadata and branch inference. See [`validation/results/accuracy.md`](validation/results/accuracy.md) for exact scoring and [`VALIDATION.md`](VALIDATION.md) for methodology, reproduction steps and claim boundaries.
+> Scope: this is the measured result on the committed controlled curated benchmark; it is not a claim of universal real-world accuracy.
 
 ## Why configuration coverage?
 
