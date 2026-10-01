@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - pyproject.toml
+      - .github/workflows/publish-pypi.yml
   workflow_dispatch:
 
 concurrency:
@@ -33,7 +34,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Require an actual version change
+      - name: Require a version change or an unreleased current version
         id: gate
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -57,14 +58,24 @@ jobs:
               release = current != previous
               print(f"Previous version: {previous}", file=__import__("sys").stderr)
 
+          tag = f"v{current}"
+          tag_exists = subprocess.run(
+              ["git", "show-ref", "--verify", "--quiet", f"refs/tags/{tag}"],
+              check=False,
+          ).returncode == 0
+          if not release and not tag_exists:
+              release = True
+              print(f"Release recovery: {tag} is not published yet.", file=__import__("sys").stderr)
+
           print(f"Current version: {current}", file=__import__("sys").stderr)
+          print(f"Current tag exists: {tag_exists}", file=__import__("sys").stderr)
           print(f"release={'true' if release else 'false'}")
           print(f"version={current}")
           PY
 
-      - name: Explain metadata-only update
+      - name: Explain skipped release
         if: steps.gate.outputs.release != 'true'
-        run: echo "pyproject.toml changed without a package version change; release publication is intentionally skipped."
+        run: echo "The current package version is already released and no version change was detected; publication is intentionally skipped."
 
   build:
     name: verify and build
