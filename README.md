@@ -38,7 +38,7 @@ ConfigReach is evaluated on a committed **50,000-case curated benchmark** with d
 | F1 | **100.0000%** |
 | Accuracy | **100.0000%** |
 
-The committed benchmark data is in [`validation/curated_50k/data/configreach_50k_scenarios.jsonl`](validation/curated_50k/data/configreach_50k_scenarios.jsonl). Aggregate results are in [`validation/results/curated_50k.md`](validation/results/curated_50k.md) and [`validation/results/curated_50k.json`](validation/results/curated_50k.json), with row-level predictions in [`validation/results/curated_50k_predictions.csv`](validation/results/curated_50k_predictions.csv). The same 50K evidence is published in the [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation) and summarized in the [Hugging Face Space](https://huggingface.co/spaces/sauravsingla08/ConfigReach).
+The benchmark data, aggregate results and row-level predictions are available in the [validation folder](validation/). The same 50K benchmark is also published as a [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation).
 
 > Scope: this is the measured result on the committed controlled curated benchmark; it is not independently human-labelled evidence and is not a claim of universal real-world accuracy.
 
