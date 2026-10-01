@@ -9,6 +9,7 @@ from .baseline import apply_baseline, baseline_path
 from .config import Settings, load_settings
 from .discover import scan as core_scan
 from .hardening import apply_hardening
+from .lexical_hardening import apply_lexical_hardening
 from .models import ConfigKey, Location, ScanReport
 from .schemas import REPORT_SCHEMA_VERSION
 from .semantic_adapters import (
@@ -163,6 +164,7 @@ def scan(root: str | Path = ".", settings: Settings | None = None, *, use_cache:
             record_terraform_validators(text, rel, report.keys)
 
     apply_hardening(root_path, settings, report)
+    apply_lexical_hardening(root_path, settings, report)
 
     # Re-apply boolean inference after semantic/validator adapters add finite domains/flags.
     for item in report.keys.values():
