@@ -12,4 +12,4 @@ if sys.version_info < (3, 11):  # pragma: no cover - exercised by Python 3.10 CI
 
     sys.modules.setdefault("tomllib", _tomllib)
 
-__version__ = "0.9.4"
+__version__ = "0.9.5"
