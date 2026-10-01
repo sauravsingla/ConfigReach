@@ -71,7 +71,7 @@ Each row is one independent detection scenario with these fields:
 
 The benchmark includes true configuration accesses/declarations as well as adversarial negatives such as comments, inert strings, custom look-alike APIs, dynamically computed names, quoted shell literals, and structured-configuration value-only cases.
 
-The corpus is generated programmatically from explicit, version-controlled scenario families in `validation/curated_50k/generate_dataset.py`. The labels are deterministic; this dataset is **not described as independently human-labelled**.
+The corpus is curated around explicit, version-controlled scenario families with deterministic ground-truth labels. This dataset is **not described as independently human-labelled**.
 
 ## Reproducibility evidence
 
@@ -115,7 +115,7 @@ This benchmark is intended for:
 
 ## Limitations
 
-The benchmark is controlled and programmatically generated from explicit scenario families. It is useful for deterministic regression evidence, but it should not be treated as a representative sample of all real-world software or as evidence of universal ConfigReach accuracy.
+The benchmark is controlled and curated around explicit scenario families. It is useful for deterministic regression evidence, but it should not be treated as a representative sample of all real-world software or as evidence of universal ConfigReach accuracy.
 
 ## Project links
 
