@@ -4,6 +4,28 @@ All notable ConfigReach changes are documented here. The project follows semanti
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-10-01
+
+### Added
+- Added the committed 50,000-case curated benchmark with deterministic ground-truth labels and production-engine scoring evidence.
+- Added synchronized Hugging Face Space and Dataset publication for the curated 50K benchmark.
+- Added an enterprise security gate with full-history secret scanning, workflow-pin policy enforcement, untrusted-repository boundary regressions and non-root/offline container tests.
+- Added `docs/enterprise-security.md` with a regulated-enterprise software-intake checklist and restrictive deployment profile.
+
+### Changed
+- Made the release container run as a dedicated non-root user and verify non-root operation after publication.
+- Converted 50K, measured-accuracy and reviewed validation evidence workflows to read-only reproducibility gates rather than allowing generated evidence to be pushed directly to `main`.
+- Pinned external GitHub Actions used by project workflows to immutable commit SHAs and added an automated policy check to prevent mutable references from returning.
+- Replaced Hugging Face CLI bootstrap via remote shell script with a pinned `huggingface_hub` package installation.
+- Extended the release synchronizer so PyPI, GHCR, GitHub Release/`v0`, GitHub Pages, Hugging Face Space and the Hugging Face 50K Dataset are refreshed from the same released source.
+
+### Security
+- Closed a repository-file symlink boundary gap in later semantic and precision-hardening passes by propagating symlink ignores before those passes and excluding symlinked workspace/.NET manifests.
+- Added regression coverage proving production scans do not read repository-controlled file symlinks outside the scan root.
+- Added core invariants that reject network-client imports, `os.system` and `subprocess(..., shell=True)` in the scanner core.
+- Made fixed HIGH/CRITICAL container vulnerabilities fail the Trivy security gate instead of remaining report-only.
+- Added full-history Gitleaks secret scanning and explicit enterprise data-handling/runtime-execution guidance.
+
 ## [0.9.4] - 2026-09-30
 
 ### Added
@@ -81,7 +103,8 @@ All notable ConfigReach changes are documented here. The project follows semanti
 - Cross-platform reproducibility verification.
 - Optional tree-sitter JavaScript adapter example.
 
-[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.4...HEAD
+[Unreleased]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.5...HEAD
+[0.9.5]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/sauravsingla/ConfigReach/compare/v0.9.1...v0.9.2
