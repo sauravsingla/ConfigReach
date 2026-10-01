@@ -28,7 +28,7 @@
   <section id="benchmark"><div class="wrap">
     <div class="kicker">Curated 50K benchmark</div>
     <h2 class="title">50,000 controlled cases. Balanced ground truth. One production scanner.</h2>
-    <p class="intro">The committed benchmark contains 25,000 positive and 25,000 negative scenarios across supported programming languages and configuration formats. Every case has a deterministic expected label, is generated from explicit version-controlled scenario families, and is scored through <code>configreach.engine.scan</code>.</p>
+    <p class="intro">The committed curated benchmark contains 25,000 positive and 25,000 negative scenarios across supported programming languages and configuration formats. Every case has a deterministic expected label, belongs to an explicit version-controlled scenario family, and is scored through <code>configreach.engine.scan</code>.</p>
     <div class="stats"><div class="stat"><strong>50,000</strong><span>scenarios</span></div><div class="stat"><strong>25,000</strong><span>positive cases</span></div><div class="stat"><strong>25,000</strong><span>negative cases</span></div><div class="stat"><strong>0</strong><span>FP + FN</span></div></div>
     <div class="grid"><div class="card"><h3>Precision</h3><p><strong>100.0000%</strong> — 25,000 TP and 0 FP on the committed controlled benchmark.</p></div><div class="card"><h3>Recall</h3><p><strong>100.0000%</strong> — 25,000 TP and 0 FN on the committed controlled benchmark.</p></div><div class="card"><h3>F1 / Accuracy</h3><p><strong>100.0000% / 100.0000%</strong> with TP 25,000, FP 0, TN 25,000, FN 0.</p></div></div>
     <div class="actions"><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k.md" target="_blank" rel="noopener noreferrer">Measured result ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k.json" target="_blank" rel="noopener noreferrer">Machine-readable result ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k_predictions.csv" target="_blank" rel="noopener noreferrer">Row-level predictions ↗</a></div>
@@ -37,7 +37,7 @@
   <section id="scope"><div class="wrap">
     <div class="kicker">Claim boundary</div>
     <h2 class="title">Strong regression evidence, clearly scoped.</h2>
-    <p class="intro">This is a controlled curated benchmark generated programmatically from explicit, version-controlled scenario families with deterministic ground-truth labels. It is not described as independently human-labelled and is not a claim of universal real-world accuracy.</p>
+    <p class="intro">This is a controlled curated benchmark with explicit, version-controlled scenario families and deterministic ground-truth labels. It is not described as independently human-labelled and is not a claim of universal real-world accuracy.</p>
     <div class="grid"><div class="card"><h3>Positive cases</h3><p>Real supported configuration accesses and declarations across languages and structured configuration formats.</p></div><div class="card"><h3>Adversarial negatives</h3><p>Comments, inert strings, custom look-alike APIs, dynamic names, quoting traps and structured value-only cases.</p></div><div class="card"><h3>Reproducible</h3><p>The dataset, manifest, aggregate result and row-level predictions are all committed and published.</p></div></div>
   </div></section>
 
