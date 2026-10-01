@@ -56,9 +56,9 @@ else:
 
 A suite can execute that block every time and still never test `PAYMENT_MODE=live`. ConfigReach inventories configuration reads and declarations, maps them to test evidence, tracks known values and branches, measures configuration combinations, and reports the gaps.
 
-## Problems developers actually search for
+## Questions ConfigReach answers
 
-Different teams describe configuration-coverage gaps in different ways. ConfigReach is designed to answer questions behind searches like these:
+ConfigReach is designed to answer practical configuration-testing questions such as:
 
 - **environment variable test coverage** — Which environment variables and known values are actually exercised by tests? Run `configreach coverage .`.
 - **feature flag test coverage** — Are enabled/disabled states and known feature-flag values covered? Run `configreach matrix .`.
@@ -78,6 +78,8 @@ python -m pip install --upgrade configreach
 configreach scan .
 configreach coverage .
 ```
+
+> **Interpreting 0% coverage:** if ConfigReach discovers configuration inputs but finds no recognized test files or runtime evidence, 0% coverage is an expected result, not a scan failure. Run from the repository root and include the project's tests for a meaningful coverage assessment.
 
 ### GitHub Container Registry
 
@@ -354,7 +356,7 @@ Baseline keys remain visible but are excluded from CI key-coverage gating. Cache
 ## Optional lightweight runtime tracing
 
 ```bash
-configreach trace -- pytest -q
+configreach trace --path . -- pytest -q
 configreach scan .
 ```
 
@@ -378,6 +380,8 @@ Every finding retains source provenance.
 
 ## GitHub Actions
 
+For high-assurance or regulated workflows, pin both third-party Actions and ConfigReach itself to reviewed immutable commit SHAs:
+
 ```yaml
 name: Configuration coverage
 on: [pull_request]
@@ -386,10 +390,11 @@ jobs:
   configreach:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: sauravsingla/ConfigReach@v0
+          persist-credentials: false
+      - uses: sauravsingla/ConfigReach@860618b95835fed8aba6bd0b8f8048e9bfdbeddd # v0.9.5
         with:
           path: .
           format: markdown
@@ -397,7 +402,7 @@ jobs:
           fail-on: error
 ```
 
-`@v0` is the stable released Action line and advances only through the verified release workflow. Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
+For convenience, `@v0` remains the stable released Action line and advances only through the verified release workflow. Regulated environments should pin the exact reviewed release commit shown above, or another internally approved immutable revision. Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
 
 ## Supply-chain and security gates
 
