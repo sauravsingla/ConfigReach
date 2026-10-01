@@ -1,11 +1,13 @@
-name: Publish ConfigReach validation dataset to Hugging Face
+name: Publish ConfigReach curated 50K dataset to Hugging Face
 
 on:
   push:
     branches: [main]
     paths:
-      - validation/results/external-holdout-full.json
-      - validation/results/accuracy.json
+      - validation/curated_50k/data/configreach_50k_scenarios.jsonl
+      - validation/curated_50k/manifest.json
+      - validation/results/curated_50k.json
+      - validation/results/curated_50k_predictions.csv
       - huggingface-dataset/**
       - scripts/build_hf_dataset.py
       - pyproject.toml
@@ -25,39 +27,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
 
-      - name: Build dataset from committed validation evidence
-        run: |
-          python scripts/build_hf_dataset.py --output .hf-dataset
+      - name: Build dataset from committed curated 50K evidence
+        run: python scripts/build_hf_dataset.py --output .hf-dataset
 
       - name: Verify generated dataset payload
         run: |
           python - <<'PY'
+          import hashlib
           import json
           import pathlib
 
           root = pathlib.Path('.hf-dataset')
-          rows = [json.loads(line) for line in (root / 'data/external_holdout.jsonl').read_text(encoding='utf-8').splitlines() if line.strip()]
+          data_path = root / 'data/configreach_50k_scenarios.jsonl'
           summary = json.loads((root / 'metadata/summary.json').read_text(encoding='utf-8'))
+          manifest = json.loads((root / 'metadata/manifest.json').read_text(encoding='utf-8'))
+          result = json.loads((root / 'metadata/results.json').read_text(encoding='utf-8'))
 
-          if not rows:
-              raise SystemExit('generated dataset has no rows')
-          if len(rows) != summary['projects']:
-              raise SystemExit('generated dataset row count does not match summary')
-          if sum(row['configuration_inputs'] for row in rows) != summary['configuration_inputs']:
-              raise SystemExit('generated dataset configuration input count does not match summary')
-          if sum(row['covered_inputs'] for row in rows) != summary['covered_inputs']:
-              raise SystemExit('generated dataset covered input count does not match summary')
-          if not (root / 'README.md').is_file():
-              raise SystemExit('generated dataset card is missing')
+          rows = sum(1 for line in data_path.open(encoding='utf-8') if line.strip())
+          digest = hashlib.sha256(data_path.read_bytes()).hexdigest()
+          overall = result['overall']
 
-          print(f"Verified {len(rows)} dataset rows")
+          assert rows == 50000 == summary['scenario_count'] == manifest['scenario_count']
+          assert summary['expected_positive'] == manifest['expected_positive'] == 25000
+          assert summary['expected_negative'] == manifest['expected_negative'] == 25000
+          assert digest == summary['dataset_sha256'] == manifest['jsonl_sha256']
+          assert overall['tp'] == 25000 and overall['fp'] == 0
+          assert overall['tn'] == 25000 and overall['fn'] == 0
+          assert overall['precision'] == 1.0 and overall['recall'] == 1.0
+          assert overall['f1'] == 1.0 and overall['accuracy'] == 1.0
+          assert result['scanner']['entry_point'] == 'configreach.engine.scan'
+          assert (root / 'README.md').is_file()
+          assert (root / 'evidence/configreach_50k_predictions.csv').is_file()
+
+          card = (root / 'README.md').read_text(encoding='utf-8')
+          assert '50,000' in card and '25,000' in card and '100.0000%' in card
+          assert 'data/configreach_50k_scenarios.jsonl' in card
+          print('Verified Hugging Face curated 50K dataset payload')
           PY
 
       - name: Install Hugging Face CLI
@@ -72,4 +84,4 @@ jobs:
           hf upload sauravsingla08/configreach-validation .hf-dataset . \
             --repo-type dataset \
             --delete="*" \
-            --commit-message="Sync ConfigReach validation dataset from GitHub ${GITHUB_SHA::7}"
+            --commit-message="Sync ConfigReach curated 50K benchmark from GitHub ${GITHUB_SHA::7}"

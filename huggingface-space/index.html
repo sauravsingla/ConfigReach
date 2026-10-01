@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="ConfigReach is deterministic configuration coverage for software repositories, evaluated on a committed curated 50K benchmark.">
+  <meta property="og:title" content="ConfigReach — configuration coverage">
+  <meta property="og:description" content="Deterministic configuration coverage with a committed 50,000-case controlled curated benchmark.">
+  <meta property="og:type" content="website">
+  <title>ConfigReach — configuration coverage</title>
+  <style>
+    :root{--bg:#06101d;--panel:#0d1d30;--line:#203650;--text:#f5f9ff;--muted:#9db0c7;--green:#72e6b1;--blue:#6fc7ff;--max:1120px;--radius:18px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 12% 8%,rgba(111,199,255,.12),transparent 28rem),radial-gradient(circle at 88% 4%,rgba(114,230,177,.10),transparent 26rem),linear-gradient(180deg,#06101d,#071321 55%,#06101d);color:var(--text);line-height:1.6}.wrap{width:min(var(--max),calc(100% - 36px));margin:auto}a{color:inherit}.top{position:sticky;top:0;z-index:20;background:rgba(6,16,29,.84);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07)}nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:850}.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--green),var(--blue))}.navlinks{display:flex;gap:18px;align-items:center;font-size:14px;color:var(--muted)}.navlinks a{text-decoration:none}.hero{padding:82px 0 54px;text-align:center}.badge{display:inline-flex;padding:7px 12px;border-radius:999px;border:1px solid rgba(114,230,177,.25);background:rgba(114,230,177,.06);color:#ccffe8;font-weight:800;font-size:13px}.hero h1{font-size:clamp(44px,7.4vw,82px);line-height:.98;letter-spacing:-.055em;margin:24px auto 20px;max-width:980px}.grad{background:linear-gradient(90deg,#fff,#9edaff 48%,#8df0bd);-webkit-background-clip:text;background-clip:text;color:transparent}.lede{font-size:clamp(18px,2vw,22px);max-width:860px;color:var(--muted);margin:0 auto}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:30px 0 18px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:47px;padding:0 18px;border-radius:12px;text-decoration:none;font-weight:850;border:1px solid var(--line);background:rgba(255,255,255,.035)}.btn.primary{background:linear-gradient(135deg,var(--green),#a8f2cc);border:0;color:#04130d}.trust{display:flex;justify-content:center;gap:14px 22px;flex-wrap:wrap;font-size:13px;color:#839ab5}.trust span:before{content:"✓";color:var(--green);margin-right:6px;font-weight:900}section{padding:66px 0}.kicker{text-transform:uppercase;letter-spacing:.15em;font-size:12px;color:var(--green);font-weight:900}.title{font-size:clamp(32px,5vw,52px);letter-spacing:-.04em;line-height:1.07;margin:8px 0 14px}.intro{max-width:900px;color:var(--muted);font-size:17px;margin:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px}.stat,.card{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,rgba(16,36,58,.8),rgba(10,23,39,.72));padding:22px}.stat strong{font-size:30px;display:block;letter-spacing:-.03em}.stat span{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}.card h3{margin:0 0 8px;font-size:18px}.card p{margin:0;color:var(--muted);font-size:14px}.note{margin-top:18px;color:#9bb0c9;font-size:14px}.terminal{margin-top:28px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:#050b13;overflow:hidden}.termbar{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;color:#8095ae;background:#09111d}pre{margin:0;padding:22px;overflow:auto;font:14px/1.72 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#cbdaf0}.cmd{color:#fff}.ok{color:var(--green)}.linksgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px}.linkcard{display:block;padding:20px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.025);text-decoration:none}.linkcard strong{display:block}.linkcard span{display:block;color:var(--muted);font-size:13px;margin-top:4px}footer{border-top:1px solid rgba(255,255,255,.08);padding:27px 0 38px;color:#7f94ad;font-size:13px}.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}@media(max-width:850px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.linksgrid{grid-template-columns:1fr 1fr}.navlinks .hide-sm{display:none}}@media(max-width:560px){.stats,.grid,.linksgrid{grid-template-columns:1fr}.hero{padding-top:58px}.hero h1{font-size:46px}.wrap{width:min(var(--max),calc(100% - 24px))}}
+  </style>
+</head>
+<body>
+<header class="top"><div class="wrap"><nav><a class="brand" href="#top"><span class="mark"></span>ConfigReach</a><div class="navlinks"><a class="hide-sm" href="#benchmark">50K benchmark</a><a class="hide-sm" href="#scope">Scope</a><a href="https://huggingface.co/datasets/sauravsingla08/configreach-validation" target="_blank" rel="noopener noreferrer">Dataset ↗</a><a href="https://github.com/sauravsingla/ConfigReach" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></nav></div></header>
+<main id="top">
+  <section class="hero"><div class="wrap">
+    <div class="badge">50,000-case curated benchmark · CPU-only · deterministic</div>
+    <h1><span class="grad">Configuration coverage, measured deterministically.</span></h1>
+    <p class="lede">ConfigReach discovers runtime configuration inputs, values, branches and important combinations, then maps them to test evidence without an LLM, GPU, API key or hosted service.</p>
+    <div class="actions"><a class="btn primary" href="https://huggingface.co/datasets/sauravsingla08/configreach-validation" target="_blank" rel="noopener noreferrer">Explore the 50K dataset ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach/tree/main/validation/curated_50k" target="_blank" rel="noopener noreferrer">Benchmark source ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach" target="_blank" rel="noopener noreferrer">View source ↗</a></div>
+    <div class="trust"><span>No LLM</span><span>No GPU</span><span>No telemetry</span><span>Static target scan</span><span>Production engine</span></div>
+  </div></section>
+
+  <section id="benchmark"><div class="wrap">
+    <div class="kicker">Curated 50K benchmark</div>
+    <h2 class="title">50,000 controlled cases. Balanced ground truth. One production scanner.</h2>
+    <p class="intro">The committed benchmark contains 25,000 positive and 25,000 negative scenarios across supported programming languages and configuration formats. Every case has a deterministic expected label and is scored through <code>configreach.engine.scan</code>.</p>
+    <div class="stats"><div class="stat"><strong>50,000</strong><span>scenarios</span></div><div class="stat"><strong>25,000</strong><span>positive cases</span></div><div class="stat"><strong>25,000</strong><span>negative cases</span></div><div class="stat"><strong>0</strong><span>FP + FN</span></div></div>
+    <div class="grid"><div class="card"><h3>Precision</h3><p><strong>100.0000%</strong> — 25,000 TP and 0 FP on the committed controlled benchmark.</p></div><div class="card"><h3>Recall</h3><p><strong>100.0000%</strong> — 25,000 TP and 0 FN on the committed controlled benchmark.</p></div><div class="card"><h3>F1 / Accuracy</h3><p><strong>100.0000% / 100.0000%</strong> with TP 25,000, FP 0, TN 25,000, FN 0.</p></div></div>
+    <div class="actions"><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k.md" target="_blank" rel="noopener noreferrer">Measured result ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k.json" target="_blank" rel="noopener noreferrer">Machine-readable result ↗</a><a class="btn" href="https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k_predictions.csv" target="_blank" rel="noopener noreferrer">Row-level predictions ↗</a></div>
+  </div></section>
+
+  <section id="scope"><div class="wrap">
+    <div class="kicker">Claim boundary</div>
+    <h2 class="title">Strong regression evidence, clearly scoped.</h2>
+    <p class="intro">This is a controlled curated benchmark generated programmatically from explicit, version-controlled scenario families with deterministic ground-truth labels. It is not described as independently human-labelled and is not a claim of universal real-world accuracy.</p>
+    <div class="grid"><div class="card"><h3>Positive cases</h3><p>Real supported configuration accesses and declarations across languages and structured configuration formats.</p></div><div class="card"><h3>Adversarial negatives</h3><p>Comments, inert strings, custom look-alike APIs, dynamic names, quoting traps and structured value-only cases.</p></div><div class="card"><h3>Reproducible</h3><p>The dataset, manifest, aggregate result and row-level predictions are all committed and published.</p></div></div>
+  </div></section>
+
+  <section id="install"><div class="wrap">
+    <div class="kicker">Try ConfigReach</div>
+    <h2 class="title">Run locally or from source.</h2>
+    <p class="intro">The released package is available from PyPI. To reproduce the exact currently committed benchmark implementation before the next package release, install directly from GitHub <code>main</code>.</p>
+    <div class="terminal"><div class="termbar">shell</div><pre><span class="cmd">python -m pip install --upgrade configreach</span>
+<span class="cmd">configreach scan .</span>
+<span class="cmd">configreach coverage .</span>
+
+<span class="cmd">python -m pip install --upgrade "git+https://github.com/sauravsingla/ConfigReach.git@main"</span></pre></div>
+    <p class="note">Repository package metadata: <strong>v0.9.4</strong>. Supported Python versions: <strong>3.10–3.14</strong>.</p>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="kicker">Project links</div>
+    <div class="linksgrid"><a class="linkcard" href="https://huggingface.co/datasets/sauravsingla08/configreach-validation" target="_blank" rel="noopener noreferrer"><strong>50K Dataset</strong><span>Full corpus and evidence</span></a><a class="linkcard" href="https://github.com/sauravsingla/ConfigReach" target="_blank" rel="noopener noreferrer"><strong>GitHub</strong><span>Source and validation</span></a><a class="linkcard" href="https://pypi.org/project/configreach/" target="_blank" rel="noopener noreferrer"><strong>PyPI</strong><span>Released package</span></a><a class="linkcard" href="https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage" target="_blank" rel="noopener noreferrer"><strong>Collection</strong><span>Project hub</span></a></div>
+  </div></section>
+</main>
+<footer><div class="wrap foot"><span>ConfigReach · MIT</span><span>Published from GitHub with Hugging Face OIDC</span></div></footer>
+</body>
+</html>

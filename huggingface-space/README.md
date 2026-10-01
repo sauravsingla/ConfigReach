@@ -9,7 +9,7 @@ fullWidth: true
 header: mini
 pinned: true
 license: mit
-short_description: CPU-only config coverage for env vars, feature flags & CI.
+short_description: CPU-only configuration coverage with a curated 50K benchmark.
 datasets:
   - sauravsingla08/configreach-validation
 tags:
@@ -38,9 +38,39 @@ ConfigReach is a deterministic, CPU-only configuration coverage analyzer for sof
 
 **Project hub:** [ConfigReach — Configuration Coverage collection](https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage)
 
-## Try ConfigReach on your repository
+## Curated 50K benchmark
 
-Run it locally in under a minute:
+ConfigReach is evaluated on a committed **50,000-case controlled curated benchmark** with deterministic ground-truth labels. The corpus is balanced with **25,000 positive** and **25,000 negative** scenarios across supported programming languages and configuration formats.
+
+The benchmark is scored through the production **`configreach.engine.scan`** entry point.
+
+| Metric | Result |
+|---|---:|
+| Scenarios | **50,000** |
+| True positives | **25,000** |
+| False positives | **0** |
+| True negatives | **25,000** |
+| False negatives | **0** |
+| Precision | **100.0000%** |
+| Recall | **100.0000%** |
+| F1 | **100.0000%** |
+| Accuracy | **100.0000%** |
+
+The full 50K corpus and row-level evidence are published in the linked Hugging Face Dataset and committed in GitHub.
+
+> **Scope:** this is the measured result on the committed controlled curated benchmark. It is not a claim of universal real-world accuracy. The benchmark is programmatically generated from explicit version-controlled scenario families with deterministic labels; it is not described as independently human-labelled.
+
+## Explore the benchmark
+
+- [Hugging Face 50K dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
+- [GitHub benchmark source](https://github.com/sauravsingla/ConfigReach/tree/main/validation/curated_50k)
+- [Measured result](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k.md)
+- [Machine-readable result](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k.json)
+- [Row-level predictions](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/curated_50k_predictions.csv)
+
+## Try ConfigReach
+
+Released package:
 
 ```bash
 python -m pip install --upgrade configreach
@@ -48,69 +78,25 @@ configreach scan .
 configreach coverage .
 ```
 
-Or add it to GitHub Actions:
-
-```yaml
-- uses: sauravsingla/ConfigReach@v0
-  with:
-    path: .
-    format: markdown
-```
-
-The Hugging Face Space is the public project/demo page. Repository scanning runs locally, in CI, or from the public container; ConfigReach does not require a GPU, LLM, API key, hosted service, telemetry, or paid dependency.
-
-## Current source version
-
-**ConfigReach v0.9.4** is the current repository version and supports Python 3.10–3.14.
+To reproduce the exact currently committed benchmark source before the next package release, install from `main`:
 
 ```bash
-pip install --upgrade configreach
+python -m pip install --upgrade "git+https://github.com/sauravsingla/ConfigReach.git@main"
 ```
 
-## Published external validation
+ConfigReach requires no GPU, LLM, API key, hosted service, telemetry, or paid dependency. Static analysis does not execute the target repository.
 
-The current frozen external holdout scans **11 pinned public open-source repositories across 9 ecosystems**. The repositories were selected before ConfigReach results were examined and are disjoint from the earlier 10-project baseline.
+## Current repository metadata
 
-**Validation provenance:** the frozen external holdout was produced with **ConfigReach v0.9.2** at source revision `0bb468da29355a86f05b0870a1ac61bf8a5696b8`. The separate hand-labelled accuracy corpus was produced with **ConfigReach v0.9.3** at source revision `09f181f67d6e0a6df119341bc522afd6e7ef3b2c`. ConfigReach v0.9.4 is the current source release; historical validation evidence is intentionally not relabelled when the software version advances.
-
-- **11 / 11** repository jobs completed successfully
-- **96,845** configuration inputs discovered
-- **5,539** inputs with detected test/runtime evidence
-- **5.72%** aggregate observed configuration coverage
-- **34,933.6s (~9.70 cumulative scanner-hours)** across independently executed repository jobs
-- **0** repository overlap with the earlier validation baseline
-
-The 5.72% figure is **configuration evidence coverage, not precision, recall or F1**. It is the fraction of discovered configuration inputs for which ConfigReach linked test/runtime evidence.
-
-## Accuracy evidence
-
-### External precision & recall
-
-External precision, recall and F1 will be published only after independently labelled cases from the frozen external holdout are reviewed. Until then, ConfigReach makes **no external precision/recall/F1 claim** from the 96,845-input holdout.
-
-### Small hand-labelled benchmark
-
-A separate committed benchmark covers five core analysis tasks and currently reports:
-
-- **100.0% micro precision**
-- **100.0% micro recall**
-- **100.0% micro F1**
-- **100.0% macro F1**
-- **37 true positives, 0 false positives, 0 false negatives**
-
-This is deliberately a **small corpus-specific measurement, not a claim of universal 100% accuracy**.
+The current repository package metadata is **ConfigReach v0.9.4** and supports **Python 3.10–3.14**. The 50K evidence above is tied to the committed `main` implementation and its production scanner entry point.
 
 ## Project links
 
 - [ConfigReach Hugging Face collection](https://huggingface.co/collections/sauravsingla08/configreach-configuration-coverage)
-- [Hugging Face validation dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
+- [Hugging Face curated 50K dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
 - [GitHub repository](https://github.com/sauravsingla/ConfigReach)
 - [PyPI package](https://pypi.org/project/configreach/)
-- [Validation methodology](https://github.com/sauravsingla/ConfigReach/blob/main/VALIDATION.md)
-- [Full frozen external holdout](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/external-holdout-full.md)
-- [Machine-readable external holdout](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/external-holdout-full.json)
-- [Measured hand-labelled accuracy](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/accuracy.md)
-- [Historical 10-project baseline](https://github.com/sauravsingla/ConfigReach/blob/main/validation/results/real-world.md)
-- [GitHub Pages site](https://sauravsingla.github.io/ConfigReach/)
+- [50K benchmark methodology](https://github.com/sauravsingla/ConfigReach/blob/main/validation/curated_50k/README.md)
+- [50K benchmark manifest](https://github.com/sauravsingla/ConfigReach/blob/main/validation/curated_50k/manifest.json)
 
 This Space is published automatically from GitHub using Hugging Face Trusted Publishers and GitHub Actions OIDC. No long-lived Hugging Face token is stored in GitHub.
