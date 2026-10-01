@@ -99,7 +99,7 @@ jobs:
           import tomllib
           import configreach
 
-          metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+          metadata = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))
           package_version = metadata["project"]["version"]
           if package_version != configreach.__version__:
               raise SystemExit(
