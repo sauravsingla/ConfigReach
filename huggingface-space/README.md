@@ -9,7 +9,7 @@ fullWidth: true
 header: mini
 pinned: true
 license: mit
-short_description: CPU-only configuration coverage with a curated 50K benchmark.
+short_description: CPU-only config coverage with a curated 50K benchmark.
 datasets:
   - sauravsingla08/configreach-validation
 tags:
