@@ -5,18 +5,11 @@
 **ConfigReach is a deterministic, CPU-only, offline configuration coverage analyzer that shows which runtime configuration inputs, values, branches and important combinations your tests actually exercise.** Think **Codecov for configuration space**.
 
 [![PyPI](https://img.shields.io/pypi/v/configreach.svg)](https://pypi.org/project/configreach/)
-[![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/spaces/sauravsingla08/ConfigReach)
-[![Hugging Face 50K Dataset](https://img.shields.io/badge/Hugging%20Face-50K%20Dataset-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
 [![CI](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/sauravsingla/ConfigReach/badge)](https://scorecard.dev/viewer/?uri=github.com/sauravsingla/ConfigReach)
-[![Reproducibility](https://github.com/sauravsingla/ConfigReach/actions/workflows/reproducibility.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/reproducibility.yml)
-[![Performance](https://github.com/sauravsingla/ConfigReach/actions/workflows/performance.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/performance.yml)
 [![Curated 50K Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml)
-[![GHCR](https://img.shields.io/badge/GHCR-configreach-blue.svg)](https://github.com/sauravsingla/ConfigReach/pkgs/container/configreach)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10–3.14](https://img.shields.io/badge/Python-3.10%E2%80%933.14-blue.svg)](https://www.python.org/)
-[![Runtime dependencies: minimal](https://img.shields.io/badge/runtime%20dependencies-minimal-brightgreen.svg)](pyproject.toml)
 
 ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry and no paid dependency**. Python 3.11+ uses only the standard library at runtime; Python 3.10 adds the pinned `tomli` backport for TOML parsing. Static analysis does not execute the target repository. Machine-readable results are deterministic for the same repository state and configuration.
 
@@ -113,21 +106,6 @@ For regulated internal workflows, pin the exact approved release or commit accor
 git clone https://github.com/sauravsingla/ConfigReach.git
 cd ConfigReach
 python -m pip install -e .
-```
-
-Useful examples:
-
-```bash
-configreach scan examples/polyglot
-configreach explain PAYMENT_MODE examples/polyglot
-configreach matrix examples/polyglot
-configreach scan examples/polyglot --format html --output configreach.html
-configreach plan examples/combinations --format markdown
-configreach plan examples/combinations --fixture pytest --output configreach_cases.py
-configreach workspace . --format json --output configreach-workspaces.json
-configreach adapters --format json
-configreach reproduce examples/combinations --runs 3
-configreach schema --format json
 ```
 
 ## Observable metrics — no opaque AI score
