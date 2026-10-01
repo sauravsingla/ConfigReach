@@ -59,7 +59,7 @@ jobs:
           fail-on: error
 ```
 
-For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@v0.9.4`.
+For immutable release pinning, use `sauravsingla/ConfigReach@v0.9.5`. High-assurance organizations may instead pin the exact approved commit SHA according to their supply-chain policy.
 
 ## What the listing should highlight
 
@@ -70,14 +70,16 @@ For immutable pinning, use a full release tag such as `sauravsingla/ConfigReach@
 - Works directly inside pull-request CI
 - Supports environment variables, feature flags, configuration declarations, CLI options and multiple ecosystems
 - Markdown, JSON, SARIF and HTML output
+- Committed 50,000-case curated benchmark with deterministic labels and production-engine scoring
+- Enterprise intake guidance, immutable project workflow pins, full-history secret scanning and non-root container release
 - Reproducible public validation evidence
 - Archived software record on Zenodo
 
 ## Release copy
 
-**ConfigReach v0.9.4 — configuration coverage for CI**
+**ConfigReach v0.9.5 — configuration coverage for CI**
 
-ConfigReach complements code coverage by checking whether the environment variables, feature flags and configuration states that change application behaviour have test/runtime evidence.
+ConfigReach complements code coverage by checking whether the environment variables, feature flags and configuration states that change application behaviour have test/runtime evidence. v0.9.5 includes the curated 50K benchmarked implementation and enterprise software-intake hardening.
 
 Quick start:
 
@@ -96,10 +98,11 @@ Project hub:
 - Hugging Face Space: https://huggingface.co/spaces/sauravsingla08/ConfigReach
 - Validation Dataset: https://huggingface.co/datasets/sauravsingla08/configreach-validation
 - PyPI: https://pypi.org/project/configreach/
+- Enterprise Security: https://github.com/sauravsingla/ConfigReach/blob/main/docs/enterprise-security.md
 - Zenodo: https://zenodo.org/records/23038726
 
 ## Marketplace readiness
 
 The repository contains a root `action.yml` with a Marketplace-oriented name and description, documented inputs, composite implementation and branding. The current release line also maintains a floating `v0` tag for stable pre-1.0 usage.
 
-ConfigReach v0.9.4 is the current GitHub Marketplace release line. The repository metadata, release line and installation documentation are synchronized with the live listing.
+ConfigReach v0.9.5 is the current GitHub Marketplace release line. The repository metadata, release line and installation documentation are synchronized by the verified release workflow.
