@@ -6,13 +6,13 @@
 
 [![PyPI](https://img.shields.io/pypi/v/configreach.svg)](https://pypi.org/project/configreach/)
 [![Hugging Face Space](https://img.shields.io/badge/Hugging%20Face-Space-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/spaces/sauravsingla08/ConfigReach)
-[![Hugging Face Dataset](https://img.shields.io/badge/Hugging%20Face-Dataset-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
+[![Hugging Face 50K Dataset](https://img.shields.io/badge/Hugging%20Face-50K%20Dataset-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/datasets/sauravsingla08/configreach-validation)
 [![CI](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/sauravsingla/ConfigReach/badge)](https://scorecard.dev/viewer/?uri=github.com/sauravsingla/ConfigReach)
 [![Reproducibility](https://github.com/sauravsingla/ConfigReach/actions/workflows/reproducibility.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/reproducibility.yml)
 [![Performance](https://github.com/sauravsingla/ConfigReach/actions/workflows/performance.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/performance.yml)
-[![Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/validation.yml)
+[![Curated 50K Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml)
 [![GHCR](https://img.shields.io/badge/GHCR-configreach-blue.svg)](https://github.com/sauravsingla/ConfigReach/pkgs/container/configreach)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10–3.14](https://img.shields.io/badge/Python-3.10%E2%80%933.14-blue.svg)](https://www.python.org/)
@@ -38,7 +38,7 @@ ConfigReach is evaluated on a committed **50,000-case curated benchmark** with d
 | F1 | **100.0000%** |
 | Accuracy | **100.0000%** |
 
-The committed benchmark data is in [`validation/curated_50k/data/configreach_50k_scenarios.jsonl`](validation/curated_50k/data/configreach_50k_scenarios.jsonl). Aggregate results are in [`validation/results/curated_50k.md`](validation/results/curated_50k.md) and [`validation/results/curated_50k.json`](validation/results/curated_50k.json), with row-level predictions in [`validation/results/curated_50k_predictions.csv`](validation/results/curated_50k_predictions.csv).
+The committed benchmark data is in [`validation/curated_50k/data/configreach_50k_scenarios.jsonl`](validation/curated_50k/data/configreach_50k_scenarios.jsonl). Aggregate results are in [`validation/results/curated_50k.md`](validation/results/curated_50k.md) and [`validation/results/curated_50k.json`](validation/results/curated_50k.json), with row-level predictions in [`validation/results/curated_50k_predictions.csv`](validation/results/curated_50k_predictions.csv). The same 50K evidence is published in the [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation) and summarized in the [Hugging Face Space](https://huggingface.co/spaces/sauravsingla08/ConfigReach).
 
 > Scope: this is the measured result on the committed controlled curated benchmark; it is not a claim of universal real-world accuracy.
 
@@ -79,6 +79,12 @@ configreach scan .
 configreach coverage .
 ```
 
+The published package is the stable release line. The **50K benchmark above is tied to the current `main` implementation**; to reproduce that exact implementation before the next package release, install directly from `main`:
+
+```bash
+python -m pip install --upgrade "git+https://github.com/sauravsingla/ConfigReach.git@main"
+```
+
 ### GitHub Container Registry
 
 The image is public, multi-architecture (`linux/amd64` and `linux/arm64`), and published with SBOM/provenance:
@@ -90,7 +96,7 @@ docker run --rm -v "$PWD:/workspace" ghcr.io/sauravsingla/configreach:latest sca
 
 ### GitHub Action
 
-Use the floating major tag for stable v0 updates:
+Use the floating major tag for the stable released v0 line:
 
 ```yaml
 - uses: sauravsingla/ConfigReach@v0
@@ -101,7 +107,7 @@ Use the floating major tag for stable v0 updates:
     fail-on: error
 ```
 
-See [`docs/marketplace.md`](docs/marketplace.md) for Action/Marketplace installation details.
+The curated 50K result is measured from current `main`; the floating `@v0` tag remains the stable released Action until the next release moves that tag forward. See [`docs/marketplace.md`](docs/marketplace.md) for Action/Marketplace installation details.
 
 ### Development from source
 
@@ -350,7 +356,7 @@ jobs:
           fail-on: error
 ```
 
-Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
+`@v0` is the stable released Action line. The curated 50K benchmark result above is tied to the current `main` implementation until the next release advances `v0`. Markdown output can be appended to the job summary, SARIF can be uploaded to Code Scanning, and the repository includes an optional PR-comment workflow.
 
 ## Supply-chain and security gates
 
