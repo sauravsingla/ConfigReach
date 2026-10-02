@@ -1,0 +1,35 @@
+{
+  "title": "ConfigReach Curated 50K Benchmark",
+  "subtitle": "50,000 balanced config-input detection scenarios across 24 technology groups",
+  "description": "A reproducible controlled benchmark for configuration-input detection. It contains 50,000 deterministic labeled scenarios, balanced 25,000 positive and 25,000 negative, spanning 24 programming-language and configuration-format groups. Includes the canonical scenario JSONL, row-level ConfigReach predictions, integrity manifest, and benchmark summary. This is a controlled curated benchmark, not independently human-labelled real-world data. Licensed under the MIT License; Kaggle license is marked as Other because MIT is not a native Kaggle dataset-license option.",
+  "id": "sauravsingla/configreach-curated-50k-benchmark",
+  "licenses": [
+    {
+      "name": "other"
+    }
+  ],
+  "keywords": [
+    "classification",
+    "benchmark",
+    "software",
+    "computer-science"
+  ],
+  "resources": [
+    {
+      "path": "configreach_50k_scenarios.jsonl",
+      "description": "Canonical 50,000-row labeled ConfigReach benchmark in JSON Lines format."
+    },
+    {
+      "path": "configreach_50k_predictions.csv",
+      "description": "Row-level ConfigReach predictions with expected/actual detection and TP/FP/TN/FN classification."
+    },
+    {
+      "path": "manifest.json",
+      "description": "Integrity metadata including class balance, group counts, byte size, and SHA-256."
+    },
+    {
+      "path": "benchmark.md",
+      "description": "Human-readable aggregate benchmark results."
+    }
+  ]
+}
