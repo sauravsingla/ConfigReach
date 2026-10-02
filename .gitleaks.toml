@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated ConfigReach curated 50K synthetic benchmark"
+paths = [
+  '''^dataset/configreach_50k_scenarios\.jsonl$'''
+]
