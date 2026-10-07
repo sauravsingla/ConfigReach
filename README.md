@@ -46,40 +46,6 @@ ConfigReach is **offline, deterministic and CPU-only**. It needs no GPU, LLM, AP
 
 **Best way to help:** run ConfigReach on a real repository and open an issue with a configuration pattern it misses or misclassifies.
 
-## Curated 50K benchmark
-
-ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is assembled from explicit, version-controlled scenario families and scored through the production `configreach.engine.scan()` entry point.
-
-| Metric | Result |
-|---|---:|
-| Scenarios | **50,000** |
-| TP | **25,000** |
-| FP | **0** |
-| TN | **25,000** |
-| FN | **0** |
-| Precision | **100%** |
-| Recall | **100%** |
-| F1 | **100%** |
-| Accuracy | **100%** |
-
-The benchmark data, aggregate results and row-level predictions are available in the [validation folder](validation/). The same 50K benchmark is also published as a [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation).
-
-> Scope: this is the measured result on the committed controlled curated benchmark; it is not independently human-labelled evidence and is not a claim of universal real-world accuracy.
-
-## Why configuration coverage?
-
-Code coverage can tell you that a line executed. It cannot tell you whether the configuration states that change that line's behavior were exercised.
-
-```python
-mode = os.getenv("PAYMENT_MODE", "sandbox")
-if mode == "live":
-    charge_real_card()
-else:
-    simulate_charge()
-```
-
-A suite can execute that block every time and still never test `PAYMENT_MODE=live`. ConfigReach inventories configuration reads and declarations, maps them to test evidence, tracks known values and branches, measures configuration combinations, and reports the gaps.
-
 ## Questions ConfigReach answers
 
 ConfigReach is designed to answer practical configuration-testing questions such as:
@@ -91,7 +57,7 @@ ConfigReach is designed to answer practical configuration-testing questions such
 - **test environment variables** — Where is a key such as `PAYMENT_MODE` read, declared, defaulted and tested? Run `configreach explain PAYMENT_MODE .`.
 - **Kubernetes configuration testing** — Which Kubernetes-style environment declarations map to application configuration reads, and which lack test evidence? Run `configreach scan .`. ConfigReach performs static repository analysis; it does not claim to validate live-cluster behavior.
 
-## Quick start
+## Installation and CI options
 
 ### PyPI CLI
 
@@ -138,6 +104,27 @@ git clone https://github.com/sauravsingla/ConfigReach.git
 cd ConfigReach
 python -m pip install -e .
 ```
+
+## Maintainer validation benchmark
+
+ConfigReach is evaluated on a committed **50,000-case curated benchmark** with deterministic ground-truth labels, split evenly into **25,000 positive** and **25,000 negative** scenarios. The benchmark is assembled from explicit, version-controlled scenario families and scored through the production `configreach.engine.scan()` entry point.
+
+| Metric | Result |
+|---|---:|
+| Scenarios | **50,000** |
+| TP | **25,000** |
+| FP | **0** |
+| TN | **25,000** |
+| FN | **0** |
+| Precision | **100%** |
+| Recall | **100%** |
+| F1 | **100%** |
+| Accuracy | **100%** |
+
+The benchmark data, aggregate results and row-level predictions are available in the [validation folder](validation/). The same 50K benchmark is also published as a [Hugging Face Dataset](https://huggingface.co/datasets/sauravsingla08/configreach-validation).
+
+> Scope: this is the measured result on the committed controlled curated benchmark; it is not independently human-labelled evidence and is not a claim of universal real-world accuracy.
+
 
 ## Observable metrics — no opaque AI score
 
