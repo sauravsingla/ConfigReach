@@ -2,18 +2,49 @@
 
 > **High code coverage does not guarantee high configuration coverage. ConfigReach measures the gap.**
 
-**ConfigReach is a deterministic, CPU-only, offline configuration coverage analyzer that shows which runtime configuration inputs, values, branches and important combinations your tests actually exercise.** Think **Codecov for configuration space**.
+**ConfigReach is “Codecov for configuration space.”** It finds environment variables, feature flags, CLI options and configuration values in a repository, then shows which states your tests actually exercise.
 
-[![PyPI v0.9.5](https://img.shields.io/badge/PyPI-v0.9.5-blue.svg)](https://pypi.org/project/configreach/0.9.5/)
+[![PyPI](https://img.shields.io/pypi/v/configreach.svg)](https://pypi.org/project/configreach/)
 [![CI](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/codeql.yml)
-[![Curated 50K Validation](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml/badge.svg)](https://github.com/sauravsingla/ConfigReach/actions/workflows/curated-50k-validation.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.10–3.14](https://img.shields.io/badge/Python-3.10%E2%80%933.14-blue.svg)](https://www.python.org/)
 
-ConfigReach needs **no GPU, no LLM, no API key, no hosted service, no telemetry and no paid dependency**. Python 3.11+ uses only the standard library at runtime; Python 3.10 adds the pinned `tomli` backport for TOML parsing. Static analysis does not execute the target repository. Machine-readable results are deterministic for the same repository state and configuration.
+## The problem
+
+A test suite can execute a configuration-dependent code path and still never exercise the configuration state that changes its behavior.
+
+```python
+mode = os.getenv("PAYMENT_MODE", "sandbox")
+if mode == "live":
+    charge_real_card()
+else:
+    simulate_charge()
+```
+
+Traditional code coverage can report this block as covered even when `PAYMENT_MODE=live` was never tested. ConfigReach turns that hidden configuration surface into something measurable.
+
+## Try it in 30 seconds
+
+```bash
+python -m pip install --upgrade configreach
+configreach scan .
+configreach coverage .
+```
+
+ConfigReach is **offline, deterministic and CPU-only**. It needs no GPU, LLM, API key, hosted service or telemetry, and static analysis does not execute the target repository.
 
 ![ConfigReach terminal example](docs/demo.svg)
+
+### What you get
+
+- configuration-key and value coverage;
+- boolean, enum and branch-state coverage;
+- pairwise configuration-state coverage;
+- `explain` output for individual keys;
+- CI-friendly JSON, SARIF, HTML and Markdown output;
+- GitHub Action, container and local CLI workflows.
+
+**Best way to help:** run ConfigReach on a real repository and open an issue with a configuration pattern it misses or misclassifies.
 
 ## Curated 50K benchmark
 
