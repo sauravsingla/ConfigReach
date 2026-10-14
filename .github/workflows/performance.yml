@@ -21,7 +21,7 @@ jobs:
         run: python benchmarks/perf_budget.py --files 800 --min-files-per-second 150 --output perf-budget.json
       - name: Create performance history record
         run: python benchmarks/perf_history.py perf-budget.json --output performance-history.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: configreach-performance-history-${{ github.run_number }}
           retention-days: 90
