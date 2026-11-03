@@ -55,7 +55,7 @@ Archive = "https://zenodo.org/records/23038726"
 
 [project.optional-dependencies]
 dev = [
-  "pytest==9.1.1",
+  "pytest==9.2.0",
   "pytest-cov==7.1.0",
   "build==1.6.1",
   "wheel==0.48.0",
